@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import Background from '../RouterWidget/Background'
-import Header from '../RouterWidget/component/Header'
-import chainLookUp from '../RouterWidget/config/chainLookUp'
-import { NetworkType } from '../RouterWidget/config/network'
+import Background from './Background'
+import Header from './component/Header'
+import chainLookUp from './config/chainLookUp'
+import { NetworkType } from './config/network'
 import Swap from './Swap'
 
 

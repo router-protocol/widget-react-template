@@ -12,8 +12,8 @@ const StyledButton = styled(Button)`
   &&&{
     //background: ${({ theme})=>theme.bg3};
     background: transparent;
-    color: ${({ theme})=>theme.gray2};
-    border: 2px solid ${({ theme})=>theme.gray1};
+    color: "#A3A4A4";
+    border: 2px solid "rgba(88, 88, 99, 0.24)";
     font-family: 'Inter', sans-serif;
     font-size: 1rem;
     width: 165px;

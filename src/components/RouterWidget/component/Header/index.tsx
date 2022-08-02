@@ -1,23 +1,21 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled from "styled-components";
 //import { useDarkModeManager } from '../../state/toggletheme/hooks';
 import Network from "./Network";
 import TestFaucet from "../Button/TestFaucet";
-import logoDark from "../../assets/vectors/voyagerpbr.svg";
-import halfLogo from "../../assets/vectors/voyagerSmall.svg";
 // import BetaButton from "../Button/BetaButton";
 import { getErrorMessage1 } from "../../config/errorMessages";
 // import BetaWarning from "../BetaWarning";
 //import CallMadeRoundedIcon from '@material-ui/icons/CallMadeRounded';
 //import { IS_MAINNET } from '../../config/config';
-import { useMediaQuery } from "@material-ui/core";
+// import { useMediaQuery } from "@material-ui/core";
 //import { useSourceChain } from '../../state/swap/hooks';
 //import { useSelectedChain } from '../../state/liquidity-mining/hooks';
 // import { useLocation } from "react-router";
 // import PoweredByRouter from "../../assets/react-components/PoweredByRouter"
 import WalletBox from "../Wallets/WalletBox";
 import { NetworkType } from "../../config/network";
-import { MEDIA_WIDTHS } from "../../constant";
+// import { MEDIA_WIDTHS } from "../../constant";
 
 export const MAIN_LOGO_WIDTH = 12;
 
@@ -90,19 +88,6 @@ const HeaderRightWrapper = styled.div`
 // 	backdrop-filter: blur(1.75281px);
 // 	cursor: pointer;
 // `;
-
-const MainLogo = styled.img`
-  width: ${MAIN_LOGO_WIDTH}rem;
-  visibility: hidden;
-  @media only screen and (max-width: 1300px){
-    margin-left: 3.5rem;
-		visibility: visible;
-  }
-  @media only screen and (max-width: 960px){
-    width:25px;
-    margin-left: 0rem;
-  }
-`;
 
 // const MobileLogoWrapper = styled.div`
 //   display: grid;
@@ -213,7 +198,6 @@ const Header: React.FunctionComponent<CustomProps> = ({ currentNetwork, setCurre
   //const [darkMode, toggleSetDarkMode] = useDarkModeManager();
 
   //const windowSize: WindowSizeType = useWindowSize()
-  const upToSmall = useMediaQuery(`(max-width: ${MEDIA_WIDTHS.upToSmall}px)`);
 
   //const HeadLogo = () => windowSize.width!==undefined?(windowSize.width<=MEDIA_WIDTHS.upToSmall? <MainLogo src={halfLogo} /> :<MainLogo src={logoDark} />):<MainLogo src={logoDark} />
   // const currentRoute = useLocation();

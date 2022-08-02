@@ -75,9 +75,7 @@ import { isMobile } from "react-device-detect";
 import { Provider } from "ethers-multicall";
 import { BigNumber } from "ethers";
 import SettingsIcon from "@material-ui/icons/Settings";
-import { toast } from "react-toastify";
 // import { useLocation } from "react-router";
-import ToastComponent from "../component/ToastNotifications";
 import { getErrorMessage1 } from "../config/errorMessages";
 import { balanceCallInterval, gasLimitForStable, gasLimitNormal, pathFinderDataRefesh } from "../config/constants";
 import chainLookUp from "../config/chainLookUp";
@@ -93,8 +91,7 @@ import ErrorBoxMessage from "../component/ErrorBox/ErrorBoxMessage";
 import HoverCard from "../component/HoverCard/HoverCard";
 import SwapVisual from "../component/SwapVisual";
 import SwapVisualSameChain from "../component/SwapVisual/SwapVisualSameChain";
-import SwapVisualMobile from "../component/SwapVisual/SwapVisualMobile";
-import ToastNotification from "../component/ToastNotifications/ToastNotification";
+import SwapVisualMobile from "../component/SwapVisual/SwapVisualMobile"
 import { DEFAULT_DESTINATION_NETWORK_ID, DEFAULT_DESTINATION_TOKEN_ADDRESS, DEFAULT_SOURCE_NETWORK_ID, DEFAULT_SOURCE_TOKEN_ADDRESS } from "..";
 import { CoinType, LatestActivityType } from "../state/swap/hooks";
 import { MEDIA_WIDTHS } from "../constant";
@@ -4218,7 +4215,6 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
             />
           </div>
         </SwapWrapper>
-        <ToastNotification />
       </Wrapper>
     </>
   );

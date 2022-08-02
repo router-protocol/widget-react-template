@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { chainLogos } from "../../config/asset";
 //import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';

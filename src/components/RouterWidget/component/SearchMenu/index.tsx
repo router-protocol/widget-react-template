@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo, Dispatch } from "react";
+import React, { useEffect, useState, useCallback, Dispatch } from "react";
 import styled from "styled-components";
 import { AssetType, chainLogos, DEFAULT_ROUTE_TOKEN_LIST, remoteAssetList, TokenListType } from "../../config/asset";
 import _ from "lodash";
@@ -19,7 +19,7 @@ import Switch from "@material-ui/core/Switch";
 import ControlPointOutlinedIcon from "@material-ui/icons/ControlPointOutlined";
 import { addTokenToMetamask } from "../../utils/metamaskFunctions";
 import SettingsIcon from "@material-ui/icons/Settings";
-import { useLocation } from "react-router";
+// import { useLocation } from "react-router";
 import { CoinType } from "../../state/swap/hooks";
 
 interface Props {
