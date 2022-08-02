@@ -31,7 +31,7 @@ interface CustomProps {
   networkId: string;
   setNetworkId: (e: string) => void;
   useWidgetWallet: boolean;
-  ctaColor: string; 
+  ctaColor: string;
   textColor: string;
   backgroundColor: string;
 }
@@ -55,7 +55,7 @@ const HeaderWrapper = styled.div<{
     padding: 1.5rem;
   }
   @media only screen and (max-width: 750px){
-    background: ${({backgroundColor}) => backgroundColor !== "" ? backgroundColor : "#203B41"};
+    background: ${({ backgroundColor }) => backgroundColor !== "" ? backgroundColor : "#203B41"};
     position: fixed;
     padding: 0.6rem;
     z-index: 6;

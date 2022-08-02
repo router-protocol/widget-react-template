@@ -48,12 +48,10 @@ declare global {
 const Content = styled.div<{ backgroundColor: string }>`
   width:100%;
   height:100%;
-  min-height: 100vh;
   background: ${({ backgroundColor }) => backgroundColor ? backgroundColor : "linear-gradient(180deg, #2E3146 -165.39%, #0A0A0E 100%)"};
   display: flex;
   justify-content: center;
   padding-top: 150px;
-  max-width: 100%;
   overflow-x: hidden;
   `
 //const provider = window.walletProvider //Take this from user
@@ -67,7 +65,7 @@ export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId
 
   const changeChainListener = useCallback(() => {
     const provider = window.walletProvider
-    provider.on('chainChanged', () => {
+    provider?.on('chainChanged', () => {
       //chamge current wallet network
       console.log('Wallet Chain Changed')
       setTimeout(() => {
@@ -92,7 +90,7 @@ export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId
 
   return (
     <>
-      <Background />
+      {/* <Background /> */}
       <Content backgroundColor={backgroundColor}>
         <Header
           currentNetwork={currentNetwork}

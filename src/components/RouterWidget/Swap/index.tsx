@@ -67,7 +67,6 @@ import {
 import { coingeckoPriceList } from "../utils/coingeckoPriceList";
 import { warningSeverity } from "../utils/priceImpactSeverity";
 import { fixedDecimalPlace, getFlooredFixed } from "../utils";
-import ReactGA from "react-ga";
 import { ClickAwayListener, useMediaQuery } from "@material-ui/core";
 import useTabActive from "../hooks/useTabActive";
 import { useInitalRender } from "../hooks/useInitialRender";
@@ -1681,10 +1680,6 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
           return null;
         } else {
           const err = _.get(e, "response.data", getErrorMessage1(13, ""));
-          ReactGA.event({
-            category: "Path Finder Error",
-            action: `Swapping ${currentSourceAsset.symbol} for ${currentDestinationAsset.symbol} from ${currentSourceChain.name} to ${currentDestinationChain.name} found error ${err}`,
-          });
           setAlertOpen(true);
           setShowWarning(true);
           setAlertMessage(err);

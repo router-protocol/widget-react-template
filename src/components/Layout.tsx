@@ -1,20 +1,18 @@
 import { ReactNode } from "react";
-import { Flex } from "@chakra-ui/react";
+import styled from "styled-components";
 
 type Props = {
   children?: ReactNode;
 };
 
+const Wrapper = styled.div`
+  display: grid;
+`
+
 export default function Layout({ children }: Props) {
   return (
-    <Flex
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      h="10vh"
-      bg="gray.800"
-    >
+    <Wrapper>
       {children}
-    </Flex>
+    </Wrapper>
   );
 }
