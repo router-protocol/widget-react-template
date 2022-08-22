@@ -1,21 +1,27 @@
-# Router Widget Template
-An alternative for use of router widget via react component rather than iframe.
+Router Widget Template
+Router widget enables partners to allow their users to buy and sell any assets, on and between various blockchains in one click.
+Users will be able to do all this without having to leave the partner’s website.
 
-## Usage/Examples
-For running router widget on your app, you should follow following steps - <br />
-1. First copy the Router widget folder into your components directory of your react app. <br />
-2. Then install all the dependencies for router widget for that you have to run lib.sh. <br />
-   To run ```lib.sh```<br />
-	-In windows and linux -> give permission with ```chmod +x lib.sh```<br />
-	-Run -> ```./lib.sh```<br />
-3. After installing all the dependencies, you can use it as an independent react component.<br />
-Note - You can checkout **usage-example** branch for the applied code.<br />
-## Parameters
+Usage/Examples
+Below is how you can integrate Router widget in your website.
+For running router widget on your app, you should follow following steps.
+1. First copy the Router widget folder into your app.
+2. Then install all the dependencies for router widget for that you have to run lib.sh.
+To run lib.sh
+-In windows and linux -> give permission with chmod +x lib.sh
+-Run -> ./lib.sh
+3. Create a Route for Router widget into your app.
+3. After installing all the dependencies and route, you can use Router widget into your app.
 
-There are multiple parameters which can be provided to customize the widget. 
+Parameters
+There are multiple parameters which can be provided to customize the widget.
 
-     Parameter      	 Type	      		Description
-	1. ctaColor		    string		    Color of call to action buttons
-	2. textColor		string		    Color of all the text in the widget
-	3. backgroundColor	string		    Background theme color of the widget
-	4. useWidgetWallet	boolean		    Send false if you want to your own wallet and save your app provider in window.walletProvider
+ Parameter           Type               Description
+1. ctaColor         string          Color of call to action buttons
+2. textColor        string          Color of all the text in the widget
+3. backgroundColor  string          Background theme color of the widget
+4. useWidgetWallet  boolean         You want to use widget wallet or your own wallet in the Router widget
+Wallet
+There is two option to connect with wallet.
+1. One you can directly pass true value in useWalletWidget parameter. Then you can directly use the wallet provide by router widget itself.
+2. Second you can pass wallet provider in the global Window interface location: RouterWidget/index.tsx. Then you can use own wallet on the router widget.
