@@ -33,4 +33,4 @@ There are multiple parameters which can be provided to customize the widget.
 There is two option to connect with wallet.
     1. One you can directly pass true value in useWalletWidget parameter. Then you can directly use the wallet provide by router widget itself.
     
-	2. Second you can pass wallet provider in the global Window interface location: RouterWidget/index.tsx. Then you can use own wallet on the router widget.
+    2. Second you can pass wallet provider in the global Window interface location: RouterWidget/index.tsx. Then you can use own wallet on the router widget.
