@@ -945,67 +945,40 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
 
       if (newDestinationChain.networkId === "65") {
         setCurrentSourceAsset(assetList[currentSourceChain.networkId][0]);
-        // searchParams.append(
-        //   "fromToken",
-        //   assetList[currentSourceChain.networkId][0].address
-        // );
-        // history.replace({
-        //   pathname: location.pathname,
-        //   search: searchParams.toString(),
-        // });
-        //setFeeAsset(nativeAsset)
       }
       let newAsset = assetList[newDestinationChain.networkId].filter(
         (item) => item.symbol === currentDestinationAsset.symbol
       )[0];
-      // if (urlDstTokens) {
-      //   tokenListByUrl &&
-      //     activeListUrl.forEach((url) => {
-      //       tokenListByUrl[url]?.tokens?.forEach((token) => {
-      //         let newToken = { ...token };
-      //         if (
-      //           token.chainId.toString() === newDestinationChain.networkId &&
-      //           urlDstTokens?.includes(token.address.toString().toLowerCase())
-      //         ) {
-      //           newToken["lpSymbol"] = "";
-      //           newToken["lpAddress"] = "";
-      //           newToken["stakingRewards"] = "";
-      //           newToken["resourceId"] = "";
-      //           newToken["mappedOnBridge"] = false;
-      //           newToken["native"] = false;
-      //           newToken["hasLpToken"] = false;
-      //           newToken["isLpToken"] = false;
-      //           newToken["stableAsset"] = false;
-      //           newToken["mining"] = false;
-      //           newToken["activeMining"] = false;
-      //           newToken["enableLiquidityMining"] = false;
-      //           newAsset = newToken;
-      //         }
-      //       });
-      //     });
-      // }
+      if (urlDstTokens) {
+        tokenListByUrl &&
+          activeListUrl.forEach((url) => {
+            tokenListByUrl[url]?.tokens?.forEach((token) => {
+              let newToken = { ...token };
+              if (
+                token.chainId.toString() === newDestinationChain.networkId &&
+                urlDstTokens?.includes(token.address.toString().toLowerCase())
+              ) {
+                newToken["lpSymbol"] = "";
+                newToken["lpAddress"] = "";
+                newToken["stakingRewards"] = "";
+                newToken["resourceId"] = "";
+                newToken["mappedOnBridge"] = false;
+                newToken["native"] = false;
+                newToken["hasLpToken"] = false;
+                newToken["isLpToken"] = false;
+                newToken["stableAsset"] = false;
+                newToken["mining"] = false;
+                newToken["activeMining"] = false;
+                newToken["enableLiquidityMining"] = false;
+                newAsset = newToken;
+              }
+            });
+          });
+      }
       setCurrentDestinationAsset(
         newAsset ?? assetList[newDestinationChain.networkId][0]
       );
-      // searchParams.delete("toToken");
-      // searchParams.append(
-      //   "toToken",
-      //   newAsset?.address ??
-      //   assetList[newDestinationChain.networkId][0].address
-      // );
-      // history.replace({
-      //   pathname: location.pathname,
-      //   search: searchParams.toString(),
-      // });
-
-      setCurrentDestinationChain(newDestinationChain);
-      // searchParams.delete("toChain");
-      // searchParams.append("toChain", newDestinationChain.networkId);
-      // setSearchQuery(searchParams.toString());
-      // history.replace({
-      //   pathname: location.pathname,
-      //   search: searchParams.toString(),
-      // });
+      setCurrentDestinationChain(newDestinationChain)
       setShowDestinationChainMenu(false);
     },
     [

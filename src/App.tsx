@@ -23,7 +23,7 @@ function App() {
             fromChain={"56"}
             toChain={"137"}
             fromToken={"0x9c08941465EB16982Fa8385A7BbD74F7972C5a27"}
-            toToken={"0x101A023270368c0D50BFfb62780F4aFd4ea79C35"}
+            toToken={"0x385Eeac5cB85A38A9a07A70c73e0a3271CfB54A7"}
             srcChains={""}
             dstChains={""}
             srcTokens={""}
