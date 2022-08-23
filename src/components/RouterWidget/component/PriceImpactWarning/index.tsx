@@ -16,7 +16,7 @@ interface Props {
 
 const WrappedWarningWrapper = styled.div<{ textColor: string, backgroundColor: string }>`
 	font-family: 'Inter', sans-serif;
-    color:  ${({textColor}) => textColor !== "" ? textColor : "#FFFFFF"}
+    color:  ${({textColor}) => textColor !== "" ? textColor : "#FFFFFF"};
     width: 360px;
     height: 255px;
     border-radius: 20px;

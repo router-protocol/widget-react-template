@@ -1829,18 +1829,18 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
       console.log("pathFinderData - ", pathFinderData);
       if (
         currentSourceChain.networkId !== currentDestinationChain.networkId &&
-        pathFinderData.source.stableReserveAsset && pathFinderData.source.asset.address.toLowerCase() !== pathFinderData.source.stableReserveAsset.address.toLowerCase()
+        pathFinderData?.source?.stableReserveAsset && pathFinderData?.source?.asset?.address.toLowerCase() !== pathFinderData?.source?.stableReserveAsset?.address.toLowerCase()
       ) {
         feePriceFeed && setBridgeFee(feePriceFeed[feeAsset?.symbol]?.fee[1])
       }
-      if (parseFloat(pathFinderData.source.priceImpact) >= 10 || parseFloat(pathFinderData.destination.priceImpact) >= 10) {
+      if (parseFloat(pathFinderData?.source?.priceImpact) >= 10 || parseFloat(pathFinderData?.destination?.priceImpact) >= 10) {
         setShowPriceImpactWarning(true)
       }
-      setSrcPriceImpact(pathFinderData.source.priceImpact)
-      setSrcPath(pathFinderData.source.path)
-      setSrcFlags(pathFinderData.source.flags)
-      setSrcDistribution(pathFinderData.source.distribution)
-      setDstPriceImpact(pathFinderData.destination.priceImpact)
+      setSrcPriceImpact(pathFinderData?.source?.priceImpact)
+      setSrcPath(pathFinderData?.source?.path)
+      setSrcFlags(pathFinderData?.source?.flags)
+      setSrcDistribution(pathFinderData?.source?.distribution)
+      setDstPriceImpact(pathFinderData?.destination?.priceImpact)
       if (currentSourceAsset.resourceId !== '' && currentSourceAsset.resourceId.toLowerCase() === pathFinderData?.source?.stableReserveAsset?.resourceID) {
         setGasLimit(gasLimitForStable)
       } else {
@@ -1849,15 +1849,15 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
       //console.log('Stable reserve amount - ',ethers.BigNumber.from(pathFinderData.destination.tokenAmount))
       if (currentSourceChain.networkId === currentDestinationChain.networkId) {
         setBridgeFee(ethers.BigNumber.from(0))
-        setPathString(pathFinderData.source.tokenPath)
-        setAmountToBeReceived(calcSlippage(pathFinderData.destination.tokenAmount, slippageTolerance))
-        console.log('Formatted Amount -', formatDecimals(pathFinderData.destination.tokenAmount, currentDestinationAsset.decimals))
-        setDestinationInput(getFlooredFixed(Number(formatDecimals(pathFinderData.destination.tokenAmount, currentDestinationAsset.decimals)), 6))
-        setFinalReceivedAmount(getFlooredFixed(Number(formatDecimals(pathFinderData.destination.tokenAmount, currentDestinationAsset.decimals)), 6))
+        setPathString(pathFinderData?.source?.tokenPath)
+        setAmountToBeReceived(calcSlippage(pathFinderData?.destination?.tokenAmount, slippageTolerance))
+        console.log('Formatted Amount -', formatDecimals(pathFinderData?.destination?.tokenAmount, currentDestinationAsset.decimals))
+        setDestinationInput(getFlooredFixed(Number(formatDecimals(pathFinderData?.destination?.tokenAmount, currentDestinationAsset.decimals)), 6))
+        setFinalReceivedAmount(getFlooredFixed(Number(formatDecimals(pathFinderData?.destination?.tokenAmount, currentDestinationAsset.decimals)), 6))
       } else {
-        setAmountToBeReceived(calcSlippage(pathFinderData.destination.tokenAmount, slippageTolerance))
-        setDestinationInput(getFlooredFixed(Number(formatDecimals(pathFinderData.destination.tokenAmount, currentDestinationAsset.decimals)), 6))
-        setFinalReceivedAmount(getFlooredFixed(Number(formatDecimals(pathFinderData.destination.tokenAmount, currentDestinationAsset.decimals)), 6))
+        setAmountToBeReceived(calcSlippage(pathFinderData?.destination?.tokenAmount, slippageTolerance))
+        setDestinationInput(getFlooredFixed(Number(formatDecimals(pathFinderData?.destination?.tokenAmount, currentDestinationAsset.decimals)), 6))
+        setFinalReceivedAmount(getFlooredFixed(Number(formatDecimals(pathFinderData?.destination?.tokenAmount, currentDestinationAsset.decimals)), 6))
       }
 
       if (pathFinderData === null) {

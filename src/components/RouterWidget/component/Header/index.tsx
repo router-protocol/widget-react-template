@@ -38,7 +38,6 @@ const HeaderWrapper = styled.div<{
   correctNetwork: boolean;
   backgroundColor: string;
 }>`
-  border: 1px solid red;
   width: 100%;
   margin-top: 15px;
   position: absolute;
