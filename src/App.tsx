@@ -8,20 +8,23 @@ import RouterWidget from "./components/RouterWidget";
 import styled from "styled-components";
 
 const WidgetWrapper = styled.div`
-  height: 610px;
+  height: 100%;
   width: 100%;
-  border: 2px solid black;
+  overflow: hidden;
 `
 
 function App() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <ChakraProvider theme={theme}>
-      <Layout>
-        <h1 style={{ fontSize: "24px" }}>3rd Party Application</h1>
-        <ConnectButton handleOpenModal={onOpen} />
-        <AccountModal isOpen={isOpen} onClose={onClose} />
-        <WidgetWrapper>
+    // <ChakraProvider theme={theme}>
+    //   <Layout>
+    //     <h1 style={{ fontSize: "24px" }}>3rd Party Application</h1>
+    //     <ConnectButton handleOpenModal={onOpen} />
+    //     <AccountModal isOpen={isOpen} onClose={onClose} />
+        
+    //   </Layout>
+    // </ChakraProvider>
+    <WidgetWrapper>
           <RouterWidget
             useWidgetWallet={false}
             accountAddress={''}
@@ -30,9 +33,7 @@ function App() {
             ctaColor={""}
             backgroundColor={""}
           />
-        </WidgetWrapper>
-      </Layout>
-    </ChakraProvider>
+      </WidgetWrapper>
   );
 }
 

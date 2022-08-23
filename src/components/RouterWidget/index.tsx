@@ -52,6 +52,7 @@ const Content = styled.div<{ backgroundColor: string }>`
   display: flex;
   justify-content: center;
   padding-top: 150px;
+  max-width: 100vw;
   overflow-x: hidden;
   `
 //const provider = window.walletProvider //Take this from user
@@ -84,7 +85,7 @@ export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId
       changeChainListener()
     }
     return () => {
-      window.walletProvider.removeAllListeners()
+      window?.walletProvider?.removeAllListeners()
     }
   }, [changeChainListener])
 
