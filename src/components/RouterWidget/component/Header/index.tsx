@@ -7,13 +7,6 @@ import logoDark from "../../assets/vectors/voyagerpowered.svg";
 import halfLogo from "../../assets/vectors/voyagerMark.svg";
 // import BetaButton from "../Button/BetaButton";
 import { getErrorMessage1 } from "../../config/errorMessages";
-// import BetaWarning from "../BetaWarning";
-//import CallMadeRoundedIcon from '@material-ui/icons/CallMadeRounded';
-//import { IS_MAINNET } from '../../config/config';
-// import { useMediaQuery } from "@material-ui/core";
-//import { useSourceChain } from '../../state/swap/hooks';
-//import { useSelectedChain } from '../../state/liquidity-mining/hooks';
-// import { useLocation } from "react-router";
 import PoweredByRouter from "../../assets/react-components/PoweredByRouter"
 import WalletBox from "../Wallets/WalletBox";
 import { NetworkType } from "../../config/network";
@@ -70,6 +63,7 @@ const HeaderWrapper = styled.div<{
 `;
 
 const HeaderRightWrapper = styled.div`
+  border: 1px solid yellow;
   display: flex;
   justify-content: space-between;
   align-items: center;

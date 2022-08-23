@@ -52,6 +52,7 @@ const Content = styled.div<{ backgroundColor: string }>`
   display: flex;
   justify-content: center;
   padding-top: 150px;
+  max-width: 100vw;
   overflow-x: hidden;
   @media only screen and (max-width: 500px){
     padding-top: 80px;

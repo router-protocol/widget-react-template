@@ -28,13 +28,6 @@ import _ from "lodash";
 import {
   getBalance,
   getBalanceMulticaller,
-  getFeeTokens,
-  wrapEth,
-  unWrapEth,
-  unstakeInPool,
-  stakeInPool,
-  getFeeFromFeeHandlerMulticaller,
-  getApprovalMulticaller,
   getExecutionBlock,
 } from "../config/contractFunction";
 import swapButtonIcon from "../assets/vectors/swapButtonIcon.svg";
