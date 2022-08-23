@@ -26,7 +26,7 @@ function App() {
     // </ChakraProvider>
     <WidgetWrapper>
           <RouterWidget
-            useWidgetWallet={false}
+            useWidgetWallet={true}
             accountAddress={''}
             widgetId={"24"}
             textColor={""}

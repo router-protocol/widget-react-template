@@ -67,6 +67,7 @@ const HeaderWrapper = styled.div<{
 `;
 
 const HeaderRightWrapper = styled.div`
+  border: 1px solid yellow;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -298,7 +299,7 @@ const Header: React.FunctionComponent<CustomProps> = ({ currentNetwork, setCurre
   //       justifyContent: "space-between",
   //     }}
   //   >
-  //     {/* <HeadLogo /> */}
+  //     <HeadLogo />
   //   </div>
   // );
 
