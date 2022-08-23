@@ -53,10 +53,13 @@ const Content = styled.div<{ backgroundColor: string }>`
   justify-content: center;
   padding-top: 150px;
   overflow-x: hidden;
+  @media only screen and (max-width: 500px){
+    padding-top: 80px;
+  }
   `
 //const provider = window.walletProvider //Take this from user
 //const provider = window.ethersProvider //Make this in the app
-export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId, ctaColor, textColor, backgroundColor }: { useWidgetWallet: boolean; accountAddress: string, widgetId: string, ctaColor: string, textColor: string, backgroundColor: string }) {
+export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId, ctaColor, textColor, backgroundColor, logoURI, fromChain, toChain, fromToken, toToken, srcChains, dstChains, srcTokens, dstTokens }: { useWidgetWallet: boolean; accountAddress: string, widgetId: string, ctaColor: string, textColor: string, backgroundColor: string, logoURI: string, fromChain: string; toChain: string; fromToken: string; toToken: string; srcChains: string; dstChains: string, srcTokens: string; dstTokens: string }) {
   const [currentNetwork, setCurrentNetwork] = useState<NetworkType | ''>(initialNetwork)
   const [walletId, setWalletId] = useState('')
   const [currentAccountAddress, setCurrentAccountAddress] = useState(accountAddress)
@@ -84,7 +87,7 @@ export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId
       changeChainListener()
     }
     return () => {
-      window.walletProvider.removeAllListeners()
+      window?.walletProvider?.removeAllListeners()
     }
   }, [changeChainListener])
 
@@ -107,6 +110,7 @@ export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId
           ctaColor={ctaColor}
           textColor={textColor}
           backgroundColor={backgroundColor}
+          logoURI={logoURI}
         />
         <Swap
           currentNetwork={currentNetwork}
@@ -121,6 +125,14 @@ export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId
           ctaColor={ctaColor}
           textColor={textColor}
           backgroundColor={backgroundColor}
+          fromChain={fromChain}
+          toChain={toChain}
+          fromToken={fromToken}
+          toToken={toToken}
+          srcChains={srcChains}
+          dstChains={dstChains}
+          srcTokens={srcTokens}
+          dstTokens={dstTokens}
         />
       </Content>
     </>

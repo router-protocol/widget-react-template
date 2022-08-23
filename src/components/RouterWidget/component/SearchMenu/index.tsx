@@ -45,6 +45,10 @@ interface Props {
   ctaColor: string;
   textColor: string;
   backgroundColor: string;
+  srcChains: string;
+  dstChains: string;
+  srcTokens: string;
+  dstTokens: string;
 }
 
 const Wrapper = styled.div<{ backgroundColor: string; textColor: string }>`
@@ -381,71 +385,25 @@ const SearchMenu = ({
   isWalletConnected,
   backgroundColor,
   textColor,
-  ctaColor
+  ctaColor,
+  srcChains, 
+  dstChains, 
+  srcTokens, 
+  dstTokens
 }: Props) => {
-  // const [accountAddress] = useAccountAddress();
-  // const [tokenListByUrl] = useTokenListByUrl();
-  // const [activeListUrl, setActiveListUrl] = useActiveListUrls();
   const [showManageTab, setShowManageTab] = useState(false);
-  // const [currentNetwork] = useNetworkManager();
-  // const location = useLocation();
 
-  // const isWidget = useMemo(
-  //   () => new URLSearchParams(location.search).get("isWidget"),
-  //   [location]
-  // );
+  const urlSrcChains = srcChains?.split(",");
+  const urlDstChains = dstChains?.split(",");
+  const urlSrcTokens =  srcTokens
+      ?.split(",")
+      ?.map((token) => token.toLowerCase());
 
-  // const backgroundColor = useMemo(
-  //   () =>
-  //     decodeURIComponent(
-  //       new URLSearchParams(location.search).get("backgroundColor") ?? ""
-  //     ),
-  //   [location]
-  // );
-  // const textColor = useMemo(
-  //   () =>
-  //     decodeURIComponent(
-  //       new URLSearchParams(location.search).get("textColor") ?? ""
-  //     ),
-  //   [location]
-  // );
-  // const ctaColor = useMemo(
-  //   () =>
-  //     decodeURIComponent(
-  //       new URLSearchParams(location.search).get("ctaColor") ?? ""
-  //     ),
-  //   [location]
-  // );
+  const urlDstTokens = dstTokens
+      ?.split(",")
+      ?.map((token) => token.toLowerCase());
 
-  // const urlSrcChains = useMemo(() => {
-  //   const srcChains = new URLSearchParams(location.search).get("srcChains");
-  //   return srcChains?.split(",");
-  // }, [location]);
-
-  // const urlDstChains = useMemo(() => {
-  //   const dstChains = new URLSearchParams(location.search).get("dstChains");
-  //   return dstChains?.split(",");
-  // }, [location]);
-
-  // const urlSrcTokens = useMemo(() => {
-  //   const srcTokens = new URLSearchParams(location.search).get("srcTokens");
-  //   const srcTokensLowercase = srcTokens
-  //     ?.split(",")
-  //     ?.map((token) => token.toLowerCase());
-  //   return srcTokensLowercase;
-  // }, [location]);
-
-  // const urlDstTokens = useMemo(() => {
-  //   const dstTokens = new URLSearchParams(location.search).get("dstTokens");
-  //   const dstTokensLowercase = dstTokens
-  //     ?.split(",")
-  //     ?.map((token) => token.toLowerCase());
-  //   return dstTokensLowercase;
-  // }, [location]);
-
-  let anyToken = localStorage.getItem("anyToken")
-    ? JSON.parse(localStorage.getItem("anyToken") || "{}")
-    : null;
+  let anyToken: any = null;
   let anyTokenList =
     anyToken && anyToken[accountAddress]
       ? anyToken[accountAddress][chain.networkId]
@@ -487,20 +445,20 @@ const SearchMenu = ({
   let allTokens = anyTokenList
     ? [...list, ...tokenListRemote, ...anyTokenList]
     : [...list, ...tokenListRemote];
-  // allTokens =
-  //   isWidget?.toLowerCase() !== "true"
-  //     ? allTokens
-  //     : isSource
-  //     ? allTokens.filter((token) =>
-  //         urlSrcTokens
-  //           ? urlSrcTokens.includes(token.address.toLowerCase())
-  //           : true
-  //       )
-  //     : allTokens.filter((token) =>
-  //         urlDstTokens
-  //           ? urlDstTokens.includes(token.address.toLowerCase())
-  //           : true
-  //       );
+  allTokens =
+    (srcTokens === "" && dstTokens === "")
+      ? allTokens
+      : isSource
+      ? allTokens.filter((token) =>
+          urlSrcTokens
+            ? urlSrcTokens.includes(token.address.toLowerCase())
+            : true
+        )
+      : allTokens.filter((token) =>
+          urlDstTokens
+            ? urlDstTokens.includes(token.address.toLowerCase())
+            : true
+  );
   const sortTokenList = useCallback(
     (list: AssetType[]) =>
       list.sort(
@@ -599,7 +557,6 @@ const SearchMenu = ({
         },
       };
     }
-    localStorage.setItem("anyToken", JSON.stringify(anyToken));
     setSearchTerm("");
     setSearchedToken(null);
   };
@@ -624,9 +581,7 @@ const SearchMenu = ({
   }, [searchTerm]);
 
   useEffect(() => {
-    anyToken = localStorage.getItem("anyToken")
-      ? JSON.parse(localStorage.getItem("anyToken") || "{}")
-      : null;
+    anyToken = null;
     anyTokenList =
       anyToken && anyToken[accountAddress]
         ? anyToken[accountAddress][chain.networkId]
@@ -637,6 +592,18 @@ const SearchMenu = ({
     let filterResult = allTokens?.filter((item: any) =>
       item.symbol.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    srcTokens !== "" && dstTokens !== "" &&
+      (isSource
+        ? (filterResult = filterResult.filter((token) =>
+          urlSrcTokens
+            ? urlSrcTokens.includes(token.address.toLowerCase())
+            : true
+        ))
+        : (filterResult = filterResult.filter((token) =>
+          urlDstTokens
+            ? urlDstTokens.includes(token.address.toLowerCase())
+            : true
+        )));
     setFilteredList(sortTokenList(filterResult));
   }, [accountAddress]);
 
@@ -681,11 +648,36 @@ const SearchMenu = ({
     let filterResult = allTokens?.filter((item: any) =>
       item.symbol.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    srcTokens !== "" && dstTokens !== "" &&
+      (isSource
+        ? (filterResult = filterResult.filter((token) =>
+          urlSrcTokens
+            ? urlSrcTokens.includes(token.address.toLowerCase())
+            : true
+        ))
+        : (filterResult = filterResult.filter((token) =>
+          urlDstTokens
+            ? urlDstTokens.includes(token.address.toLowerCase())
+            : true
+        )));
     setFilteredList(sortTokenList(filterResult));
   }, [chain, activeListUrl]);
 
   useEffect(() => {
     let filterResult = [...filteredList];
+    srcTokens !== "" && dstTokens !== "" &&
+      (isSource
+        ? (filterResult = filterResult.filter((token) =>
+          urlSrcTokens
+            ? urlSrcTokens.includes(token.address.toLowerCase())
+            : true
+        ))
+        : (filterResult = filterResult.filter((token) =>
+          urlDstTokens
+            ? urlDstTokens.includes(token.address.toLowerCase())
+            : true
+    )));
+    setFilteredList(sortTokenList(filterResult));
     setFilteredList(sortTokenList(filterResult));
   }, [balanceList]);
 
@@ -732,7 +724,34 @@ const SearchMenu = ({
           </StyledInputWrapper>
           <ChainAssetWrapper>
             <ChainListWrapper backgroundColor={backgroundColor}>
-              {chains.map((thisChain, index) => (
+              {(srcChains !== "" && dstChains !== "")
+                ? chains
+                  .filter((chain) =>
+                    isSource
+                      ? urlSrcChains
+                        ? urlSrcChains.includes(chain.networkId)
+                        : true
+                      : urlDstChains
+                        ? urlDstChains.includes(chain.networkId)
+                        : true
+                  )
+                  .map((thisChain) => (
+                    <ChainWrapper
+                      active={thisChain.networkId === chain.networkId}
+                      onClick={() => {
+                        setFilteredList([]);
+                        chainSelectHandler(thisChain);
+                      }}
+                    >
+                      <ChainLogoWrapper
+                        active={thisChain.networkId === chain.networkId}
+                      >
+                        <ChainLogo src={chainLogos[thisChain.networkId]} />
+                      </ChainLogoWrapper>
+                      <span>{thisChain.name.split(" ")[0]}</span>
+                    </ChainWrapper>
+                  ))
+                : chains.map((thisChain, index) => (
                 <ChainWrapper
                   key={index}
                   active={thisChain.networkId === chain.networkId}

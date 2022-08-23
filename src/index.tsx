@@ -5,9 +5,9 @@ import { DAppProvider } from "@usedapp/core";
 
 ReactDOM.render(
   <React.StrictMode>
-    <DAppProvider config={{}}>
+    {/* <DAppProvider config={{}}> */}
       <App />
-    </DAppProvider>
+    {/* </DAppProvider> */}
   </React.StrictMode>,
   document.getElementById("root")
 );

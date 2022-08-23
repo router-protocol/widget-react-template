@@ -118,6 +118,14 @@ interface SwapInterFace {
   ctaColor: string;
   textColor: string;
   backgroundColor: string;
+  srcChains: string;
+  dstChains: string;
+  srcTokens: string;
+  dstTokens: string;
+  fromChain: string;
+  toChain: string;
+  fromToken: string;
+  toToken: string;
 }
 const Wrapper = styled.div<{ backgroundColor: string }>`
   display: grid;
@@ -467,7 +475,7 @@ const StyledSettings = styled(SettingsIcon)`
   }
 `;
 
-const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, currentAccountAddress, setCurrentAccountAddress, isWalletConnected, setIsWalletConnected, widgetId, ctaColor, textColor, backgroundColor }: SwapInterFace) => {
+const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, currentAccountAddress, setCurrentAccountAddress, isWalletConnected, setIsWalletConnected, widgetId, ctaColor, textColor, backgroundColor, fromChain, toChain, fromToken, toToken, srcChains, dstChains, srcTokens, dstTokens }: SwapInterFace) => {
   const [tabValue, setTabValue] = useState(0);
 
   const [showSourceChainMenu, setShowSourceChainMenu] = useState(false);
@@ -479,19 +487,15 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
   const [showWaitingCard, setShowWaitingCard] = useState(false);
   const [showTransactionSuccessful, setShowTransactionSuccessful] = useState(false);
 
-  // const [currentAccountAddress] = useAccountAddress();
-  // const [isWalletConnected] = useWalletConnected();
-  //   const [currentNetwork] = useNetworkManager();
-
-  const [currentSourceAsset, setCurrentSourceAsset] = useState(assetList[DEFAULT_SOURCE_NETWORK_ID].filter((item: AssetType) => item.address.toLowerCase() === DEFAULT_SOURCE_TOKEN_ADDRESS.toLowerCase())[0]);
-  const [currentSourceChain, setCurrentSourceChain] = useState<NetworkType>(chainLookUp[DEFAULT_SOURCE_NETWORK_ID]);
+  const [currentSourceAsset, setCurrentSourceAsset] = useState(assetList[fromChain !== "" ? fromChain : DEFAULT_SOURCE_NETWORK_ID].filter((item: AssetType) => item.address.toLowerCase() === (fromToken !== "" ? fromToken : DEFAULT_SOURCE_TOKEN_ADDRESS).toLowerCase())[0]);
+  const [currentSourceChain, setCurrentSourceChain] = useState<NetworkType>(chainLookUp[fromChain !== "" ? fromChain : DEFAULT_SOURCE_NETWORK_ID]);
   const [currentSourceBalance, setCurrentSourceBalance] = useState("-");
-  const [currentDestinationAsset, setCurrentDestinationAsset] = useState(assetList[DEFAULT_DESTINATION_NETWORK_ID].filter((item: AssetType) => item.address.toLowerCase() === DEFAULT_DESTINATION_TOKEN_ADDRESS.toLowerCase())[0]);
-  const [currentDestinationChain, setCurrentDestinationChain] = useState<NetworkType>(chainLookUp[DEFAULT_DESTINATION_NETWORK_ID]);
+  const [currentDestinationAsset, setCurrentDestinationAsset] = useState(assetList[toChain !== "" ? toChain : DEFAULT_DESTINATION_NETWORK_ID].filter((item: AssetType) => item.address.toLowerCase() === (toToken !== "" ? toToken : DEFAULT_DESTINATION_TOKEN_ADDRESS).toLowerCase())[0]);
+  const [currentDestinationChain, setCurrentDestinationChain] = useState<NetworkType>(chainLookUp[toChain !== "" ? toChain : DEFAULT_DESTINATION_NETWORK_ID]);
   const [currentDestinationBalance, setCurrentDestinationBalance] = useState("-");
   const [currentInputValue, setCurrentInputValue] = useState(0);
   const [currentRecipientAddress, setCurrentRecipientAddress] = useState('');
-  const [feeAsset, setFeeAsset] = useState(assetList[DEFAULT_SOURCE_NETWORK_ID].filter(item => item.native)[0]);
+  const [feeAsset, setFeeAsset] = useState(assetList[fromChain !== "" ? fromChain : DEFAULT_SOURCE_NETWORK_ID].filter(item => item.native)[0]);
   const [expertModeToggle, setExpertModeToggle] = useState<boolean>(false)
 
   const [sourceInput, setSourceInput] = useState("");
@@ -588,6 +592,16 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
 
   // const location = useLocation();
   // const [searchQuery, setSearchQuery] = useState(location.search);
+
+  const urlSrcChains = srcChains?.split(",");
+  const urlDstChains = dstChains?.split(",");
+  const urlSrcTokens =  srcTokens
+      ?.split(",")
+      ?.map((token) => token.toLowerCase());
+
+  const urlDstTokens = dstTokens
+      ?.split(",")
+      ?.map((token) => token.toLowerCase());
 
   const [feeTokenList, setFeeTokenList] = useState<null | AssetType[]>(null);
   const [showFeeMenu, setShowFeeMenu] = useState(false);
@@ -806,32 +820,32 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
       let newAsset = assetList[newSourceChain.networkId].find(
         (item) => item.symbol === currentSourceAsset.symbol
       );
-      // if (urlSrcTokens) {
-      //   tokenListByUrl &&
-      //     activeListUrl.forEach((url) => {
-      //       tokenListByUrl[url]?.tokens?.forEach((token) => {
-      //         let newToken = { ...token };
-      //         if (
-      //           token.chainId.toString() === newSourceChain.networkId &&
-      //           urlSrcTokens?.includes(token.address.toString().toLowerCase())
-      //         ) {
-      //           newToken["lpSymbol"] = "";
-      //           newToken["lpAddress"] = "";
-      //           newToken["stakingRewards"] = "";
-      //           newToken["resourceId"] = "";
-      //           newToken["mappedOnBridge"] = false;
-      //           newToken["native"] = false;
-      //           newToken["hasLpToken"] = false;
-      //           newToken["isLpToken"] = false;
-      //           newToken["stableAsset"] = false;
-      //           newToken["mining"] = false;
-      //           newToken["activeMining"] = false;
-      //           newToken["enableLiquidityMining"] = false;
-      //           newAsset = newToken;
-      //         }
-      //       });
-      //     });
-      // }
+      if (srcTokens !== "" && urlSrcTokens) {
+        tokenListByUrl &&
+          activeListUrl.forEach((url) => {
+            tokenListByUrl[url]?.tokens?.forEach((token) => {
+              let newToken = { ...token };
+              if (
+                token.chainId.toString() === newSourceChain.networkId &&
+                urlSrcTokens?.includes(token.address.toString().toLowerCase())
+              ) {
+                newToken["lpSymbol"] = "";
+                newToken["lpAddress"] = "";
+                newToken["stakingRewards"] = "";
+                newToken["resourceId"] = "";
+                newToken["mappedOnBridge"] = false;
+                newToken["native"] = false;
+                newToken["hasLpToken"] = false;
+                newToken["isLpToken"] = false;
+                newToken["stableAsset"] = false;
+                newToken["mining"] = false;
+                newToken["activeMining"] = false;
+                newToken["enableLiquidityMining"] = false;
+                newAsset = newToken;
+              }
+            });
+          });
+      }
       //const newfeeAsset =  assetList[newSourceChain.networkId].find(item => item.symbol===feeAsset.symbol)
       //let nativeAsset = assetList[currentSourceChain.networkId].find(asset => asset.native)
       setCurrentSourceAsset(
@@ -1718,7 +1732,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
         if (routerObject) {
           routerObject.getBridgeFee(currentDestinationChain.networkId).then((res: any[]) => {
             const arrangedFeeArray = feeTokenList.map((i: any) => res.filter((j: any) => i.address === j.address)[0])
-            const feeArray = arrangedFeeArray.map((i: any) => [i.transferFee, i.exchangeFee, true])
+            const feeArray = arrangedFeeArray.map((i: any) => [i?.transferFee, i?.exchangeFee, true])
             const feeObj: FeeObjectType = {};
             feeTokenList.forEach((feeToken, index) => {
               feeObj[feeToken.symbol] = {
@@ -2853,9 +2867,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
           }
         });
       });
-    let anyToken = localStorage.getItem("anyToken")
-      ? JSON.parse(localStorage.getItem("anyToken") || "{}")
-      : null;
+    let anyToken = null;
     let anySourceTokenList =
       anyToken && anyToken[currentAccountAddress]
         ? anyToken[currentAccountAddress][currentSourceChain.networkId]
@@ -2911,9 +2923,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
           }
         });
       });
-    let anyToken = localStorage.getItem("anyToken")
-      ? JSON.parse(localStorage.getItem("anyToken") || "{}")
-      : null;
+    let anyToken = null;
     let anyDestinationTokenList =
       anyToken && anyToken[currentAccountAddress]
         ? anyToken[currentAccountAddress][currentDestinationChain.networkId]
@@ -3666,7 +3676,12 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
           >
             <Menu
               title="Select Chain"
-              list={chains
+              list={srcChains === "" ? chains
+                : urlSrcChains
+                ? chains.filter((chain) =>
+                  urlSrcChains?.includes(chain.networkId)
+                )
+                : chains
               }
               iconList={chainLogos}
               currentValue={currentSourceChain}
@@ -3684,7 +3699,11 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
           >
             <Menu
               title="Select Chain"
-              list={chains}
+              list={dstChains === "" ? chains
+              : urlDstChains
+              ? chains.filter((chain) =>
+                urlDstChains?.includes(chain.networkId))
+              : chains}
               iconList={chainLogos}
               currentValue={currentDestinationChain}
               optionSelectHandler={selectCurrentDestinationChainHandler}
@@ -3725,6 +3744,10 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
               ctaColor={ctaColor}
               textColor={textColor}
               backgroundColor={backgroundColor}
+              srcChains={srcChains}
+              dstChains={dstChains}
+              srcTokens={srcTokens}
+              dstTokens={dstTokens}
             />
           </MenuWrapper>
 
@@ -3753,6 +3776,10 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
               ctaColor={ctaColor}
               textColor={textColor}
               backgroundColor={backgroundColor}
+              srcChains={srcChains}
+              dstChains={dstChains}
+              srcTokens={srcTokens}
+              dstTokens={dstTokens}
             />
           </MenuWrapper>
 
