@@ -6,7 +6,6 @@ import styled from "styled-components";
 const WidgetWrapper = styled.div`
   height: 100%;
   width: 100%;
-  overflow: hidden;
 `
 
 function App() {

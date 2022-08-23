@@ -480,10 +480,10 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
   const [showWaitingCard, setShowWaitingCard] = useState(false);
   const [showTransactionSuccessful, setShowTransactionSuccessful] = useState(false);
 
-  const [currentSourceAsset, setCurrentSourceAsset] = useState(assetList[fromChain !== "" ? fromChain : DEFAULT_SOURCE_NETWORK_ID].filter((item: AssetType) => item.address.toLowerCase() === (fromToken !== "" ? fromToken : DEFAULT_SOURCE_TOKEN_ADDRESS).toLowerCase())[0]);
+  const [currentSourceAsset, setCurrentSourceAsset] = useState(assetList[fromChain !== "" ? fromChain : DEFAULT_SOURCE_NETWORK_ID].find((item: AssetType) => item.address.toLowerCase() === (fromToken !== "" ? fromToken : DEFAULT_SOURCE_TOKEN_ADDRESS).toLowerCase())??assetList[fromChain !== "" ? fromChain : DEFAULT_SOURCE_NETWORK_ID][0]);
   const [currentSourceChain, setCurrentSourceChain] = useState<NetworkType>(chainLookUp[fromChain !== "" ? fromChain : DEFAULT_SOURCE_NETWORK_ID]);
   const [currentSourceBalance, setCurrentSourceBalance] = useState("-");
-  const [currentDestinationAsset, setCurrentDestinationAsset] = useState(assetList[toChain !== "" ? toChain : DEFAULT_DESTINATION_NETWORK_ID].filter((item: AssetType) => item.address.toLowerCase() === (toToken !== "" ? toToken : DEFAULT_DESTINATION_TOKEN_ADDRESS).toLowerCase())[0]);
+  const [currentDestinationAsset, setCurrentDestinationAsset] = useState(assetList[toChain !== "" ? toChain : DEFAULT_DESTINATION_NETWORK_ID].find((item: AssetType) => item.address.toLowerCase() === (toToken !== "" ? toToken : DEFAULT_DESTINATION_TOKEN_ADDRESS).toLowerCase())??assetList[toChain !== "" ? toChain : DEFAULT_DESTINATION_NETWORK_ID][0]);
   const [currentDestinationChain, setCurrentDestinationChain] = useState<NetworkType>(chainLookUp[toChain !== "" ? toChain : DEFAULT_DESTINATION_NETWORK_ID]);
   const [currentDestinationBalance, setCurrentDestinationBalance] = useState("-");
   const [currentInputValue, setCurrentInputValue] = useState(0);
@@ -775,28 +775,10 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
             setCurrentDestinationAsset(
               assetList[currentDestinationChain.networkId][1]
             );
-            // searchParams.delete("toToken");
-            // searchParams.append(
-            //   "toToken",
-            //   assetList[currentDestinationChain.networkId][1].address
-            // );
-            // history.replace({
-            //   pathname: location.pathname,
-            //   search: searchParams.toString(),
-            // });
           } else {
             setCurrentDestinationAsset(
               assetList[currentDestinationChain.networkId][0]
             );
-            // searchParams.delete("toToken");
-            // searchParams.append(
-            //   "toToken",
-            //   assetList[currentDestinationChain.networkId][0].address
-            // );
-            // history.replace({
-            //   pathname: location.pathname,
-            //   search: searchParams.toString(),
-            // });
           }
         }
         //currentSourceAsset.isLpToken || currentSourceAsset.native || currentDestinationAsset.isLpToken || currentDestinationAsset.native
@@ -3324,129 +3306,126 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     setTokenListData();
   }, []);
 
-  // useEffect(() => {
-  //   const selectChainToken = () => {
-  //     // const query = new URLSearchParams(location.search);
-  //     // const fromChain = query.get("fromChain");
-  //     // const toChain = query.get("toChain");
-  //     // const fromToken = query.get("fromToken");
-  //     // const toToken = query.get("toToken");
-  //     // console.log(fromChain, toChain, fromToken, toToken);
+  useEffect(() => {
+    const selectChainToken = () => {
+      // const fromChain = query.get("fromChain");
+      // const toChain = query.get("toChain");
+      console.log("For Setting the token", fromToken, toToken);
 
-  //     // const srcChain: NetworkType | null = fromChain
-  //     //   ? chainLookUp[fromChain]
-  //     //     ? chainLookUp[fromChain]
-  //     //     : null
-  //     //   : null;
-  //     // const dstChain: NetworkType | null = toChain
-  //     //   ? chainLookUp[toChain]
-  //     //     ? chainLookUp[toChain]
-  //     //     : null
-  //     //   : null;
+      const srcChain: NetworkType | null = fromChain
+        ? chainLookUp[fromChain]
+          ? chainLookUp[fromChain]
+          : null
+        : null;
+      const dstChain: NetworkType | null = toChain
+        ? chainLookUp[toChain]
+          ? chainLookUp[toChain]
+          : null
+        : null;
 
-  //     let anyToken = localStorage.getItem("anyToken")
-  //       ? JSON.parse(localStorage.getItem("anyToken") || "{}")
-  //       : null;
-  //     let anySourceTokenList =
-  //       anyToken && srcChain && anyToken[currentAccountAddress]
-  //         ? anyToken[currentAccountAddress][srcChain.networkId]
-  //         : [];
-  //     let anyDestTokenList =
-  //       anyToken && dstChain && anyToken[currentAccountAddress]
-  //         ? anyToken[currentAccountAddress][dstChain.networkId]
-  //         : [];
+      let anyToken = localStorage.getItem("anyToken")
+        ? JSON.parse(localStorage.getItem("anyToken") || "{}")
+        : null;
+      let anySourceTokenList =
+        anyToken && srcChain && anyToken[currentAccountAddress]
+          ? anyToken[currentAccountAddress][srcChain.networkId]
+          : [];
+      let anyDestTokenList =
+        anyToken && dstChain && anyToken[currentAccountAddress]
+          ? anyToken[currentAccountAddress][dstChain.networkId]
+          : [];
 
-  //     let srcToken: AssetType | null = null;
-  //     if (srcChain && fromToken) {
-  //       srcToken =
-  //         assetList[srcChain.networkId].filter(
-  //           (token) => token.address.toLowerCase() === fromToken.toLowerCase()
-  //         )[0] ?? null;
-  //       if (!srcToken) {
-  //         srcToken =
-  //           anySourceTokenList.filter(
-  //             (token: any) =>
-  //               token.address.toLowerCase() === fromToken.toLowerCase()
-  //           )[0] ?? null;
-  //       }
-  //       if (!srcToken) {
-  //         tokenListByUrl &&
-  //           activeListUrl.forEach((url) => {
-  //             tokenListByUrl[url]?.tokens?.forEach((token) => {
-  //               let newToken = { ...token };
-  //               if (
-  //                 token.chainId.toString() === srcChain.networkId &&
-  //                 token.address.toString().toLowerCase() ===
-  //                 fromToken.toLowerCase()
-  //               ) {
-  //                 newToken["lpSymbol"] = "";
-  //                 newToken["lpAddress"] = "";
-  //                 newToken["stakingRewards"] = "";
-  //                 newToken["resourceId"] = "";
-  //                 newToken["mappedOnBridge"] = false;
-  //                 newToken["native"] = false;
-  //                 newToken["hasLpToken"] = false;
-  //                 newToken["isLpToken"] = false;
-  //                 newToken["stableAsset"] = false;
-  //                 newToken["mining"] = false;
-  //                 newToken["activeMining"] = false;
-  //                 newToken["enableLiquidityMining"] = false;
-  //                 srcToken = newToken;
-  //               }
-  //             });
-  //           });
-  //       }
-  //     }
+      let srcToken: AssetType | null = null;
+      if (srcChain && fromToken) {
+        srcToken =
+          assetList[srcChain.networkId].filter(
+            (token) => token.address.toLowerCase() === fromToken.toLowerCase()
+          )[0] ?? null;
+        if (!srcToken) {
+          srcToken =
+            anySourceTokenList.filter(
+              (token: any) =>
+                token.address.toLowerCase() === fromToken.toLowerCase()
+            )[0] ?? null;
+        }
+        if (!srcToken) {
+          tokenListByUrl &&
+            activeListUrl.forEach((url) => {
+              tokenListByUrl[url]?.tokens?.forEach((token) => {
+                let newToken = { ...token };
+                if (
+                  token.chainId.toString() === srcChain.networkId &&
+                  token.address.toString().toLowerCase() ===
+                  fromToken.toLowerCase()
+                ) {
+                  newToken["lpSymbol"] = "";
+                  newToken["lpAddress"] = "";
+                  newToken["stakingRewards"] = "";
+                  newToken["resourceId"] = "";
+                  newToken["mappedOnBridge"] = false;
+                  newToken["native"] = false;
+                  newToken["hasLpToken"] = false;
+                  newToken["isLpToken"] = false;
+                  newToken["stableAsset"] = false;
+                  newToken["mining"] = false;
+                  newToken["activeMining"] = false;
+                  newToken["enableLiquidityMining"] = false;
+                  srcToken = newToken;
+                }
+              });
+            });
+        }
+      }
 
-  //     let dstToken: AssetType | null = null;
-  //     if (dstChain && toToken) {
-  //       dstToken =
-  //         assetList[dstChain.networkId].filter(
-  //           (token) => token.address.toLowerCase() === toToken.toLowerCase()
-  //         )[0] ?? null;
-  //       if (!dstToken) {
-  //         dstToken =
-  //           anyDestTokenList.filter(
-  //             (token: any) =>
-  //               token.address.toLowerCase() === toToken.toLowerCase()
-  //           )[0] ?? null;
-  //       }
-  //       if (!dstToken) {
-  //         tokenListByUrl &&
-  //           activeListUrl.map((url) => {
-  //             tokenListByUrl[url]?.tokens?.map((token) => {
-  //               let newToken = { ...token };
-  //               if (
-  //                 token.chainId.toString() === dstChain.networkId &&
-  //                 token.address.toString().toLowerCase() ===
-  //                 toToken.toLowerCase()
-  //               ) {
-  //                 newToken["lpSymbol"] = "";
-  //                 newToken["lpAddress"] = "";
-  //                 newToken["stakingRewards"] = "";
-  //                 newToken["resourceId"] = "";
-  //                 newToken["mappedOnBridge"] = false;
-  //                 newToken["native"] = false;
-  //                 newToken["hasLpToken"] = false;
-  //                 newToken["isLpToken"] = false;
-  //                 newToken["stableAsset"] = false;
-  //                 newToken["mining"] = false;
-  //                 newToken["activeMining"] = false;
-  //                 newToken["enableLiquidityMining"] = false;
-  //                 dstToken = newToken;
-  //               }
-  //             });
-  //           });
-  //       }
-  //     }
-  //     srcChain && setCurrentSourceChain(srcChain);
-  //     dstChain && setCurrentDestinationChain(dstChain);
-  //     srcToken && setCurrentSourceAsset(srcToken);
-  //     dstToken && setCurrentDestinationAsset(dstToken);
-  //   };
+      let dstToken: AssetType | null = null;
+      if (dstChain && toToken) {
+        dstToken =
+          assetList[dstChain.networkId].filter(
+            (token) => token.address.toLowerCase() === toToken.toLowerCase()
+          )[0] ?? null;
+        if (!dstToken) {
+          dstToken =
+            anyDestTokenList.filter(
+              (token: any) =>
+                token.address.toLowerCase() === toToken.toLowerCase()
+            )[0] ?? null;
+        }
+        if (!dstToken) {
+          tokenListByUrl &&
+            activeListUrl.map((url) => {
+              tokenListByUrl[url]?.tokens?.map((token) => {
+                let newToken = { ...token };
+                if (
+                  token.chainId.toString() === dstChain.networkId &&
+                  token.address.toString().toLowerCase() ===
+                  toToken.toLowerCase()
+                ) {
+                  newToken["lpSymbol"] = "";
+                  newToken["lpAddress"] = "";
+                  newToken["stakingRewards"] = "";
+                  newToken["resourceId"] = "";
+                  newToken["mappedOnBridge"] = false;
+                  newToken["native"] = false;
+                  newToken["hasLpToken"] = false;
+                  newToken["isLpToken"] = false;
+                  newToken["stableAsset"] = false;
+                  newToken["mining"] = false;
+                  newToken["activeMining"] = false;
+                  newToken["enableLiquidityMining"] = false;
+                  dstToken = newToken;
+                }
+              });
+            });
+        }
+      }
+      // srcChain && setCurrentSourceChain(srcChain);
+      // dstChain && setCurrentDestinationChain(dstChain);
+      srcToken && setCurrentSourceAsset(srcToken);
+      dstToken && setCurrentDestinationAsset(dstToken);
+    };
 
-  //   selectChainToken();
-  // }, [tokenListByUrl]);
+    selectChainToken();
+  }, [tokenListByUrl]);
 
   useEffect(() => {
     if (bridgeFee === "-") {

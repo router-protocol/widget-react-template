@@ -38,6 +38,7 @@ const HeaderWrapper = styled.div<{
   correctNetwork: boolean;
   backgroundColor: string;
 }>`
+  border: 1px solid red;
   width: 100%;
   margin-top: 15px;
   position: absolute;
@@ -63,7 +64,6 @@ const HeaderWrapper = styled.div<{
 `;
 
 const HeaderRightWrapper = styled.div`
-  border: 1px solid yellow;
   display: flex;
   justify-content: space-between;
   align-items: center;

@@ -46,6 +46,7 @@ declare global {
 }
 
 const Content = styled.div<{ backgroundColor: string }>`
+  position: relative;
   width:100%;
   height:100%;
   background: ${({ backgroundColor }) => backgroundColor ? backgroundColor : "linear-gradient(180deg, #2E3146 -165.39%, #0A0A0E 100%)"};
