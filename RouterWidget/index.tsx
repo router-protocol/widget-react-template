@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import Background from '../RouterWidget/Background'
-import Header from '../RouterWidget/component/Header'
-import chainLookUp from '../RouterWidget/config/chainLookUp'
-import { NetworkType } from '../RouterWidget/config/network'
+import Background from './Background'
+import Header from './component/Header'
+import chainLookUp from './config/chainLookUp'
+import { NetworkType } from './config/network'
 import Swap from './Swap'
 
 
@@ -46,19 +46,22 @@ declare global {
 }
 
 const Content = styled.div<{ backgroundColor: string }>`
+  position: relative;
   width:100%;
   height:100%;
-  min-height: 100vh;
   background: ${({ backgroundColor }) => backgroundColor ? backgroundColor : "linear-gradient(180deg, #2E3146 -165.39%, #0A0A0E 100%)"};
   display: flex;
   justify-content: center;
   padding-top: 150px;
-  max-width: 100%;
+  max-width: 100vw;
   overflow-x: hidden;
+  @media only screen and (max-width: 500px){
+    padding-top: 80px;
+  }
   `
 //const provider = window.walletProvider //Take this from user
 //const provider = window.ethersProvider //Make this in the app
-export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId, ctaColor, textColor, backgroundColor }: { useWidgetWallet: boolean; accountAddress: string, widgetId: string, ctaColor: string, textColor: string, backgroundColor: string }) {
+export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId, ctaColor, textColor, backgroundColor, logoURI, fromChain, toChain, fromToken, toToken, srcChains, dstChains, srcTokens, dstTokens }: { useWidgetWallet: boolean; accountAddress: string, widgetId: string, ctaColor: string, textColor: string, backgroundColor: string, logoURI: string, fromChain: string; toChain: string; fromToken: string; toToken: string; srcChains: string; dstChains: string, srcTokens: string; dstTokens: string }) {
   const [currentNetwork, setCurrentNetwork] = useState<NetworkType | ''>(initialNetwork)
   const [walletId, setWalletId] = useState('')
   const [currentAccountAddress, setCurrentAccountAddress] = useState(accountAddress)
@@ -67,7 +70,7 @@ export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId
 
   const changeChainListener = useCallback(() => {
     const provider = window.walletProvider
-    provider.on('chainChanged', () => {
+    provider?.on('chainChanged', () => {
       //chamge current wallet network
       console.log('Wallet Chain Changed')
       setTimeout(() => {
@@ -86,13 +89,13 @@ export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId
       changeChainListener()
     }
     return () => {
-      window.walletProvider.removeAllListeners()
+      window?.walletProvider?.removeAllListeners()
     }
   }, [changeChainListener])
 
   return (
     <>
-      <Background />
+      {/* <Background /> */}
       <Content backgroundColor={backgroundColor}>
         <Header
           currentNetwork={currentNetwork}
@@ -109,6 +112,7 @@ export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId
           ctaColor={ctaColor}
           textColor={textColor}
           backgroundColor={backgroundColor}
+          logoURI={logoURI}
         />
         <Swap
           currentNetwork={currentNetwork}
@@ -123,6 +127,14 @@ export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId
           ctaColor={ctaColor}
           textColor={textColor}
           backgroundColor={backgroundColor}
+          fromChain={fromChain}
+          toChain={toChain}
+          fromToken={fromToken}
+          toToken={toToken}
+          srcChains={srcChains}
+          dstChains={dstChains}
+          srcTokens={srcTokens}
+          dstTokens={dstTokens}
         />
       </Content>
     </>

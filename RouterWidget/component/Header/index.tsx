@@ -1,23 +1,18 @@
-import React, { useMemo } from "react";
+import React from "react";
 import styled from "styled-components";
 //import { useDarkModeManager } from '../../state/toggletheme/hooks';
 import Network from "./Network";
 import TestFaucet from "../Button/TestFaucet";
-import logoDark from "../../assets/vectors/voyagerpbr.svg";
-import halfLogo from "../../assets/vectors/voyagerSmall.svg";
+import logoDark from "../../assets/vectors/voyagerpowered.svg";
+import halfLogo from "../../assets/vectors/voyagerMark.svg";
 // import BetaButton from "../Button/BetaButton";
 import { getErrorMessage1 } from "../../config/errorMessages";
-// import BetaWarning from "../BetaWarning";
-//import CallMadeRoundedIcon from '@material-ui/icons/CallMadeRounded';
-//import { IS_MAINNET } from '../../config/config';
-import { useMediaQuery } from "@material-ui/core";
-//import { useSourceChain } from '../../state/swap/hooks';
-//import { useSelectedChain } from '../../state/liquidity-mining/hooks';
-// import { useLocation } from "react-router";
-// import PoweredByRouter from "../../assets/react-components/PoweredByRouter"
+import PoweredByRouter from "../../assets/react-components/PoweredByRouter"
 import WalletBox from "../Wallets/WalletBox";
 import { NetworkType } from "../../config/network";
+import { useMediaQuery } from "@material-ui/core";
 import { MEDIA_WIDTHS } from "../../constant";
+// import { MEDIA_WIDTHS } from "../../constant";
 
 export const MAIN_LOGO_WIDTH = 12;
 
@@ -33,22 +28,22 @@ interface CustomProps {
   networkId: string;
   setNetworkId: (e: string) => void;
   useWidgetWallet: boolean;
-  ctaColor: string; 
+  ctaColor: string;
   textColor: string;
   backgroundColor: string;
+  logoURI: string;
 }
 
 const HeaderWrapper = styled.div<{
   correctNetwork: boolean;
   backgroundColor: string;
 }>`
-  width: 100vw;
+  width: 100%;
   margin-top: 15px;
   position: absolute;
   top: ${({ correctNetwork }) => (correctNetwork ? "0px" : "30px")};
   display: flex;
-  // justify-content: space-between;
-  justify-content: end;
+  justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2.5rem;
   cursor: pointer;
@@ -57,7 +52,7 @@ const HeaderWrapper = styled.div<{
     padding: 1.5rem;
   }
   @media only screen and (max-width: 750px){
-    background: ${({backgroundColor}) => backgroundColor !== "" ? backgroundColor : "#203B41"};
+    background: ${({ backgroundColor }) => backgroundColor !== "" ? backgroundColor : "#203B41"};
     position: fixed;
     padding: 0.6rem;
     z-index: 6;
@@ -91,28 +86,15 @@ const HeaderRightWrapper = styled.div`
 // 	cursor: pointer;
 // `;
 
-const MainLogo = styled.img`
-  width: ${MAIN_LOGO_WIDTH}rem;
-  visibility: hidden;
-  @media only screen and (max-width: 1300px){
-    margin-left: 3.5rem;
-		visibility: visible;
-  }
-  @media only screen and (max-width: 960px){
-    width:25px;
-    margin-left: 0rem;
-  }
+const MobileLogoWrapper = styled.div`
+  display: grid;
+  place-content: center;
+  margin-left: 3.1rem;
+  width: 38px;
+  height: 38px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 7.125px;
 `;
-
-// const MobileLogoWrapper = styled.div`
-//   display: grid;
-//   place-content: center;
-//   margin-left: 3.1rem;
-//   width: 38px;
-//   height: 38px;
-//   background: rgba(0, 0, 0, 0.25);
-//   border-radius: 7.125px;
-// `;
 // const BetaWarningWrapper = styled.div<{ correctNetwork: boolean }>`
 //   position: fixed;
 //   top: ${({ correctNetwork }) => (correctNetwork ? "5.2rem" : "113.2px")};
@@ -183,37 +165,51 @@ const NetworkWarning = styled.div`
 //   	`};
 // `
 
-// const HeaderLogoWrapper = styled.div`
-//   display: flex;
-//   align-items: center;
-// `;
-// const OuterBorder = styled.div<{ textColor: string }>`
-//   border-radius: 50%;
-//   height: 36px;
-//   width: 36px;
-//   position: relative;
-//   border: 1px solid
-//     ${({ textColor, theme }) => (textColor ? textColor : theme.text1)};
-//   display: grid;
-//   place-items: center;
-// `;
+const HeaderLogoWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const OuterBorder = styled.div<{ textColor: string }>`
+  border-radius: 50%;
+  height: 36px;
+  width: 36px;
+  position: relative;
+  border: 1px solid
+    ${({ textColor }) => (textColor !== "" ? textColor : "#FFFF")};
+  display: grid;
+  place-items: center;
+  overflow: auto;
+`;
 
-// const InnerLogo = styled.img`
-//   height: 30px;
-//   width: 30px;
-// `;
-// const VerticalSeperator = styled.div<{ textColor: string }>`
-//   height: 34px;
-//   border-left: 1px solid
-//     ${({ textColor, theme }) => (textColor ? textColor : theme.text1)};
-//   margin: 0 10px;
-// `;
+const InnerLogo = styled.img`
+  height: 30px;
+  width: 30px;
+`;
+const VerticalSeperator = styled.div<{ textColor: string }>`
+  height: 34px;
+  border-left: 1px solid
+    ${({ textColor}) => (textColor !== "" ? textColor : "#FFFF")};
+  margin: 0 10px;
+`;
 
-const Header: React.FunctionComponent<CustomProps> = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, currentAccountAddress, setCurrentAccountAddress, isWalletConnected, setIsWalletConnected, networkId, setNetworkId, useWidgetWallet, ctaColor, textColor, backgroundColor }: CustomProps) => {
+const MainLogo = styled.img`
+  width: ${MAIN_LOGO_WIDTH}rem;
+  visibility: hidden;
+  @media only screen and (max-width: 1300px){
+    margin-left: 3.5rem;
+		visibility: visible;
+  }
+  @media only screen and (max-width: 750px){
+    width:25px;
+    margin-left: 0rem;
+  }
+`;
+
+
+const Header: React.FunctionComponent<CustomProps> = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, currentAccountAddress, setCurrentAccountAddress, isWalletConnected, setIsWalletConnected, networkId, setNetworkId, useWidgetWallet, ctaColor, textColor, backgroundColor, logoURI }: CustomProps) => {
   //const [darkMode, toggleSetDarkMode] = useDarkModeManager();
-
-  //const windowSize: WindowSizeType = useWindowSize()
   const upToSmall = useMediaQuery(`(max-width: ${MEDIA_WIDTHS.upToSmall}px)`);
+  //const windowSize: WindowSizeType = useWindowSize()
 
   //const HeadLogo = () => windowSize.width!==undefined?(windowSize.width<=MEDIA_WIDTHS.upToSmall? <MainLogo src={halfLogo} /> :<MainLogo src={logoDark} />):<MainLogo src={logoDark} />
   // const currentRoute = useLocation();
@@ -241,26 +237,28 @@ const Header: React.FunctionComponent<CustomProps> = ({ currentNetwork, setCurre
   // }, []);
 
 
-  // const HeadLogo = () =>
-  //   upToSmall ? (
-  //     <MainLogo src={halfLogo} />
-  //   ) : (
-  //     <MainLogo src={logoDark} />
-  //   );
-  //const HeadLogo = () => <MainLogo src={logoDark} />
-  // const [sourceChain] = useSourceChain()
-  // const [selectedChain] = useSelectedChain()
-
-  // const getNetworkName = () => {
-  // 	if (currentRoute.pathname === '/swap') {
-  // 		return sourceChain.name.split(' ')[0]
-  // 	} else if (currentRoute.pathname === '/manageliquidity') {
-  // 		return selectedChain?.name.split(' ')[0]
-  // 	} else {
-  // 		const network = IS_MAINNET ? 'Ethereum' : 'Kovan'
-  // 		return network
-  // 	}
-  // }
+  const HeadLogo = () =>
+  logoURI !== "" ? (
+    <HeaderLogoWrapper>
+      <OuterBorder
+        textColor={textColor !== "" ? textColor : "#FFFF"}
+      >
+        <InnerLogo
+          src={
+            logoURI?.slice(0, 4) === "ipfs"
+              ? `https://ipfs.io/ipfs/${logoURI?.split("//")[1]}`
+              : logoURI
+          }
+        />
+      </OuterBorder>
+      <VerticalSeperator
+        textColor={textColor !== "" ? textColor : "#FFFF"}
+      ></VerticalSeperator>
+      <PoweredByRouter
+        color={textColor !== "" ? textColor : "#FFFF"}
+      />
+    </HeaderLogoWrapper>
+  ) : <></>
 
   // const getNetworkId = () => {
   // 	if (currentRoute.pathname === '/swap') {
@@ -305,17 +303,17 @@ const Header: React.FunctionComponent<CustomProps> = ({ currentNetwork, setCurre
     </HeaderRightWrapper>
   );
 
-  // const HeaderLeft = () => (
-  //   <div
-  //     style={{
-  //       display: "flex",
-  //       alignItems: "center",
-  //       justifyContent: "space-between",
-  //     }}
-  //   >
-  //     {/* <HeadLogo /> */}
-  //   </div>
-  // );
+  const HeaderLeft = () => (
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        marginLeft: "40px"
+      }}
+    >
+      <HeadLogo />
+    </div>
+  );
 
 
   return (
@@ -327,7 +325,7 @@ const Header: React.FunctionComponent<CustomProps> = ({ currentNetwork, setCurre
         }
         backgroundColor={backgroundColor}
       >
-        {/* <HeaderLeft /> */}
+        <HeaderLeft />
         <HeaderRight />
       </HeaderWrapper>
       {isWalletConnected && (

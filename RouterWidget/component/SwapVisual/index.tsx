@@ -122,7 +122,7 @@ const Box1 = styled.div<{ animationState: string; animationType: string }>`
     content: "";
     width: 0;
     height: 0;
-    //border-top: 2px dashed ${({ theme }) => theme.gray2};
+    //border-top: 2px dashed "#A3A4A4";
     border-bottom: 2px dashed #FFFFFF;
     border-right: 2px dashed #FFFFFF;
     z-index: 1;

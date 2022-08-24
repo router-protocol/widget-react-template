@@ -46,7 +46,7 @@ const SubHeading = styled.div`
     margin-bottom: 10px;
 `
 const Error = styled(SubHeading)`
-    color: ${({ theme }) => theme.blue2};
+    color: "#00A0BE";
 `
 
 const ComponentWrapper = styled.div`

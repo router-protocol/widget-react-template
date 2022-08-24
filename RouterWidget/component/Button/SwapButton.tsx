@@ -1,7 +1,6 @@
 import { CircularProgress, useMediaQuery } from "@material-ui/core";
 import React from "react";
 import styled from "styled-components";
-import mobileButton from "../../assets/vectors/mobileSwapButton.svg";
 import { MEDIA_WIDTHS } from "../../constant";
 
 interface Props {

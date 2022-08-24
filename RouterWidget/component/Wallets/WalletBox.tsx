@@ -12,7 +12,6 @@ import Web3Modal from "web3modal";
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { ethers } from 'ethers';
 import ChangeWallet from './ChangeWallet';
-import ReactGA from 'react-ga';
 import { connectCoinbase } from './WalletLink';
 import { useInitalRender } from '../../hooks/useInitialRender';
 import { NetworkType } from '../../config/network';
@@ -241,11 +240,6 @@ const WalletBox: React.FunctionComponent<CustomProps> = ({ setCurrentNetwork, wa
 		//console.log(walletId, reason)
 		localStorage.removeItem('walletconnect')
 		if (walletId === 'injected') {
-			ReactGA.event({
-				category: 'Wallet',
-				action: `Connected to Metamask`
-			});
-
 			if (ethereum) {
 				try {
 					await walletDetailsInit(window.ethereum, 'injected')
@@ -267,11 +261,6 @@ const WalletBox: React.FunctionComponent<CustomProps> = ({ setCurrentNetwork, wa
 			}
 			return
 		}
-
-		ReactGA.event({
-			category: 'Wallet',
-			action: `Connected to ${walletId}`
-		});
 
 		try {
 			const modalProvider = await web3Modal.connectTo(walletId)
@@ -419,7 +408,7 @@ const WalletBox: React.FunctionComponent<CustomProps> = ({ setCurrentNetwork, wa
 				<WalletModal action={connectWallet} close={closeShowWalletModal} walletId={walletId} backgroundColor={backgroundColor} textColor={textColor} />
 			</MenuWrapper>
 			<MenuWrapper open={showChangeWalletModal} onClose={closeChangeWalletModal}>
-				<ChangeWallet disconnect={disconnect} action={changeModalHandler} close={closeChangeWalletModal} accountAddress={currentAccountAddress} walletId={walletId} ctaColor={ctaColor} backgroundColor={backgroundColor} textColor={textColor}/>
+				<ChangeWallet disconnect={disconnect} action={changeModalHandler} close={closeChangeWalletModal} accountAddress={currentAccountAddress} walletId={walletId} ctaColor={ctaColor} backgroundColor={backgroundColor} textColor={textColor} />
 			</MenuWrapper>
 			<MenuWrapper open={showInstallMetamask} onClose={() => setShowInstallMetamask(false)}>
 				<InfoCard>
