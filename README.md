@@ -21,7 +21,7 @@ Below is how you can integrate Router widget in your website.
 
 There are multiple parameters which can be provided to customize the widget. 
 
-Parameter      	 	Type	      			Description
+	Parameter      	 	Type	      		Description
 	1. ctaColor		string			Color of call to action buttons
 
 	2. textColor		string		        Color of all the text in the widget
@@ -51,7 +51,7 @@ There could be use cases where our partners might want to only show a selected l
 
 Restriction parameters are optional and can be used with the above customizable parameters as ```query params``` in url-
 
-  Parameter      	 Type	      			Description
+	Parameter      		Type	      		Description
 	1. srcChains		string		        List of chainId's of source chains seperated by comma that needs to be 
                                             		shown in selection menu. Only these chains will be availbale for the users
                                             		to select on the widget
