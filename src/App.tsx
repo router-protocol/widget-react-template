@@ -21,7 +21,7 @@ function App() {
             logoURI={"https://app.aavegotchi.com/images/aavegotchi-dark.gif"}
             fromChain={"56"}
             toChain={"137"}
-            fromToken={"0x9c08941465EB16982Fa8385A7BbD74F7972C5a27"}
+            fromToken={"0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d"}
             toToken={"0x385Eeac5cB85A38A9a07A70c73e0a3271CfB54A7"}
             srcChains={""}
             dstChains={""}
