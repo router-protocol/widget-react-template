@@ -38,12 +38,12 @@ const ButtonWrapper = styled.button<{
     place-items: center;
     color: ${({ active, locked, textColor }) =>
       locked
-        ? "#585863"
+        ? "#acacc6"
         : active
+        ? (textColor !== ""
         ? textColor
-        ? textColor
-        : "#FFFFFF"
-        : "#585863"};
+        : "#FFFFFF")
+        : "#acacc6"};
     cursor: ${({ locked }) => (locked ? "default" : "pointer")};
     border: 1px solid
       ${({ active, locked }) =>

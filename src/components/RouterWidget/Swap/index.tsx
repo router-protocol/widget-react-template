@@ -3431,7 +3431,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     if (bridgeFee === "-") {
       setShouldFeeApprove(false);
     } else if (
-      feeAsset.address !== currentSourceAsset.address &&
+      feeAsset?.address !== currentSourceAsset.address &&
       parseFloat(feeTokenAllowance) <
       parseFloat(formatDecimals(bridgeFee.toString(), feeAsset.decimals))
     ) {
