@@ -2039,24 +2039,28 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
 
     if (depositSuccess) {
       setBalanceTrigger((balanceTrigger) => !balanceTrigger);
+      if(currentSourceChain.networkId===currentDestinationChain.networkId){
+        setAnimationState("final");
+        setTxExplorer(explorerLinks[currentSourceChain.networkId] + tx?.hash);
+        setAnimationType("");
+        setBalanceTrigger((balanceTrigger) => !balanceTrigger);
+        setDestinationInput("");
+        setCurrentInputValue(0);
+        setSourceInput("");
+        setSrcPriceImpact("-");
+        setDstPriceImpact("-");
+        setShowTransactionSuccessful(true);
+        setTimeout(() => {
+          setAnimationState("initial");
+        }, 10000);
+      }
     } else {
       if(currentSourceChain.networkId!==currentDestinationChain.networkId){
         setAnimationState("initial");
         setAnimationType("");
       }else{
-        setAnimationState("final");
-          setTxExplorer(explorerLinks[currentSourceChain.networkId] + tx?.hash);
+          setAnimationState("initial");
           setAnimationType("");
-          setBalanceTrigger((balanceTrigger) => !balanceTrigger);
-          setDestinationInput("");
-          setCurrentInputValue(0);
-          setSourceInput("");
-          setSrcPriceImpact("-");
-          setDstPriceImpact("-");
-          setShowTransactionSuccessful(true);
-          setTimeout(() => {
-            setAnimationState("initial");
-          }, 10000);
       }
       sourceWeb3Provider?.eth.clearSubscriptions();
       destinationWeb3Provider?.eth.clearSubscriptions();
