@@ -1307,15 +1307,14 @@
   resolved "https://registry.npmjs.org/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@bitski/provider-engine@^0.7.0-beta.5":
-  version "0.7.0-beta.5"
-  resolved "https://registry.yarnpkg.com/@bitski/provider-engine/-/provider-engine-0.7.0-beta.5.tgz#14890725bffddafebe6b328187de507bc18ceb49"
-  integrity sha512-KqVHluYMtW+wEL/YD9WHPiSBbyq0MOKDQWhHewHVZaNvFySpIXKG/GOA+QQvWrUAEBJq5xN1sGpRKuclR7dlYw==
+"@bitski/provider-engine@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@bitski/provider-engine/-/provider-engine-0.8.0.tgz#4ec1802bb282212503fa9297905cf77acea2dcac"
+  integrity sha512-t6s2KhUkmwN4sIwA2XC+EGcoXce96f5MTvke5q2cPzvA0G4CEpbT7F9t1DTWFpCPo6W9wIepoosqF0Om2tLnrg==
   dependencies:
     async "^3.2.4"
     bn.js "^4.11.8"
     clone "^2.0.0"
-    cross-fetch "^3.0.6"
     eth-block-tracker "^4.4.2"
     eth-json-rpc-filters "^4.2.1"
     eth-json-rpc-middleware "^6.0.0"
@@ -3883,10 +3882,10 @@
     lodash.merge "^4.6.2"
     loglevel "^1.8.0"
 
-"@toruslabs/openlogin-jrpc@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@toruslabs/openlogin-jrpc/-/openlogin-jrpc-2.1.0.tgz#b9ea1fe827389fcf4985143223f5e5b17c38f7c2"
-  integrity sha512-kzFmkLT0X7Ti+T64EGs9wg2x+nA0dkbxD0NE/gmoRCsrUNy5uIMqMCK9tUcB+T+jmcw8YVbI/ZCJKRMXZOGhgw==
+"@toruslabs/openlogin-jrpc@^2.5.0":
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/@toruslabs/openlogin-jrpc/-/openlogin-jrpc-2.6.0.tgz#5abad636e841a5dd315c922e7965b676dc1dfc5b"
+  integrity sha512-hX2b1HSBvC6jSVlXuhgdH8qyE83cj6SEiHjQ5VsHfRUv15wBgzj+x2Yjw5pjvbrnYXzUlFvFySs10EU7na1cuA==
   dependencies:
     "@toruslabs/openlogin-utils" "^2.1.0"
     end-of-stream "^1.4.4"
@@ -3906,15 +3905,15 @@
     keccak "^3.0.2"
     randombytes "^2.1.0"
 
-"@toruslabs/torus-embed@^1.27.3":
-  version "1.27.3"
-  resolved "https://registry.yarnpkg.com/@toruslabs/torus-embed/-/torus-embed-1.27.3.tgz#cd9d30375fcc434a22666e73cc72128a0052028f"
-  integrity sha512-biVRAdmOFcema3Gn9zJYTw9ZIIkgZuUEJgULujbGUplIUqU37zZpsacnNpn76cqTKbLFI56vqwjIDbKt3+qbpw==
+"@toruslabs/torus-embed@^1.35.6":
+  version "1.35.6"
+  resolved "https://registry.yarnpkg.com/@toruslabs/torus-embed/-/torus-embed-1.35.6.tgz#90442aa4b1ad9177af11c16eddc537be2a13f286"
+  integrity sha512-Oeqht3vl9Q2YerKHihRq36FpNOe3ui/eZGDsRgvUhwESj1eElVVUYeS+meYP8aJxgfr02bi1pJh1urIt/YcFWg==
   dependencies:
     "@metamask/obs-store" "^7.0.0"
     "@toruslabs/fetch-node-details" "^7.0.2"
     "@toruslabs/http-helpers" "^3.1.0"
-    "@toruslabs/openlogin-jrpc" "^2.1.0"
+    "@toruslabs/openlogin-jrpc" "^2.5.0"
     "@toruslabs/torus.js" "^6.1.0"
     create-hash "^1.2.0"
     end-of-stream "^1.4.4"
@@ -5651,23 +5650,23 @@ bip66@^1.1.5:
   dependencies:
     safe-buffer "^5.0.1"
 
-bitski-provider@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/bitski-provider/-/bitski-provider-1.0.0.tgz#4cf208b1ab2aa79d19deb5c2516fac6aee6443d9"
-  integrity sha512-anDDgIh0Eq9v18kDwsN7hx9MLm1grhJiLlrudJsEpr/UrUga1XMJ3PFvgZXfaGQPLblK7RMnULmCytBly5kCVw==
+bitski-provider@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/bitski-provider/-/bitski-provider-1.1.1.tgz#976b26ec8f23a176fbf96d63e8a00d5f9559af92"
+  integrity sha512-U2UZKpMXEk2cbfIIBz6pF1/5MBAhOPR1Grp/kBfxxcBVfZBHYOnvNA1h5V4lNkoh2oNlb9gLeCr5I2xQ6KoqtQ==
   dependencies:
-    "@bitski/provider-engine" "^0.7.0-beta.5"
+    "@bitski/provider-engine" "^0.8.0"
     bn.js "^4.11.8"
     json-rpc-error "^2.0.0"
 
-bitski@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/bitski/-/bitski-2.0.1.tgz#92151d453dc4092846db5e6c8ad6398d162bd6fa"
-  integrity sha512-H0Gk/WFjMYN6CA0Xvy/ZtV2B2TxLC5D2ZoE4Dm8+2XsBkrS6cW84x5tBsXfAtOv9z4hmP1OPPEr0xfAmt7NZJw==
+bitski@^2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/bitski/-/bitski-2.1.4.tgz#210320835189a45c44833a5aaa5ae8de33c5d9ac"
+  integrity sha512-XHa9wMkMPDOYLtTzVJRm6WCWq6IDm80GML1agdPgQSPM9W+n9kJBE0yh62t9WSEBgsxYPLNLpqf3/5qZpgb3Dg==
   dependencies:
-    "@bitski/provider-engine" "^0.7.0-beta.5"
+    "@bitski/provider-engine" "^0.8.0"
     "@openid/appauth" "^1.2.6"
-    bitski-provider "^1.0.0"
+    bitski-provider "^1.1.1"
     uuid "^8.0.0"
 
 blakejs@^1.1.0:
@@ -6811,7 +6810,7 @@ cross-fetch@^2.1.0:
     node-fetch "^2.6.7"
     whatwg-fetch "^2.0.4"
 
-cross-fetch@^3.0.6, cross-fetch@^3.1.4:
+cross-fetch@^3.1.4:
   version "3.1.5"
   resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.5.tgz#e1389f44d9e7ba767907f7af8454787952ab534f"
   integrity sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==

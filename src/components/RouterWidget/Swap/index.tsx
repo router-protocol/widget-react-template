@@ -1196,14 +1196,16 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
         if (tx === null) {
         } else {
           try {
+            console.log("depositFallbackId =>");
             const txReceipt =
               await srcWeb3JSONProvider.eth.getTransactionReceipt(tx);
+            console.log("txReceipt",txReceipt)
             if (txReceipt?.status) {
-              const depositLog = txReceipt?.logs.filter(
-                (log: any) =>
-                  log.topics[0] ===
-                  "0xc9745c10b9322d1d4b7bf22f00dc660872b611832eedcfffdbcdc09ebafcb313"
-              );
+                const depositLog = txReceipt?.logs.filter(
+                  (log: any) =>
+                    log.topics[0] ===
+                    "0xc9745c10b9322d1d4b7bf22f00dc660872b611832eedcfffdbcdc09ebafcb313"
+                );
               let decodedLog = await decodeLogForDeposit(depositLog[0]);
               depositNonce = decodedLog?.depositNonce;
               setSrcTxExplorer(
@@ -1615,15 +1617,15 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
   }, [currentDestinationChain, currentSourceChain, currentDestinationAsset]);
 
   const fetchPathFinderData = useCallback(
-    async (cancelToken: any) => {
+    async (cancelToken: any) => { 
       const args = {
-        'fromTokenAddress': currentSourceAsset.address, // USDC on Polygon
-        'toTokenAddress': currentDestinationAsset.address, // USDC on Fantom
+        'fromTokenAddress': currentSourceAsset.native ? nativeAssetAddress[currentSourceChain.networkId] : currentSourceAsset.address, // USDC on Polygon
+        'toTokenAddress': currentDestinationAsset.native ? nativeAssetAddress[currentDestinationChain.networkId] : currentDestinationAsset.address, // USDC on Fantom
         'amount': expandDecimals(currentInputValue, currentSourceAsset.decimals).toString(), // 10 USDC (USDC token contract on Polygon has 6 decimal places)
         'fromTokenChainId': currentSourceChain.networkId, // Polygon
         'toTokenChainId': currentDestinationChain.networkId, // Fantom
         'userAddress': currentAccountAddress,
-        'feeTokenAddress': feeAsset.address, // ROUTE on Polygon
+        'feeTokenAddress': feeAsset.native ? nativeAssetAddress[currentDestinationChain.networkId] : feeAsset.address, // ROUTE on Polygon
         'slippageTolerance': slippageTolerance,
         'widgetId': widgetId
       }
@@ -1992,7 +1994,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     }
     let tx;
     try {
-      tx = tx = await signer.sendTransaction({ ...swapExecutionData });
+      tx = await signer.sendTransaction({ ...swapExecutionData });
     } catch (e) {
       if (e.code?.toString() === "4001") {
         setShowWaitingCard(false);
@@ -2547,11 +2549,10 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
         currentSourceAsset.address,
         currentAccountAddress,
         sourceInfiniteApproval
-          ? formatDecimals(
-            ethers.constants.MaxUint256,
-            currentSourceAsset.decimals
-          )
-          : currentInputValue,
+          ? 
+            ethers.constants.MaxUint256
+          : expandDecimals(currentInputValue,
+            currentSourceAsset.decimals),
         currentDestinationChain.networkId,
         signer
       ).then((res: any) => {

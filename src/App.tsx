@@ -14,7 +14,7 @@ function App() {
           <RouterWidget
             useWidgetWallet={true}
             accountAddress={''}
-            widgetId={"24"}
+            widgetId={"47"}
             textColor={"rgb(242,242,242)"}
             ctaColor={"rgb(114,23,244)"}
             backgroundColor={"rgb(18,3,46)"}
