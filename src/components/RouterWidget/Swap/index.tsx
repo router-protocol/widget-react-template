@@ -1625,7 +1625,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
         'fromTokenChainId': currentSourceChain.networkId, // Polygon
         'toTokenChainId': currentDestinationChain.networkId, // Fantom
         'userAddress': currentAccountAddress,
-        'feeTokenAddress': feeAsset.native ? nativeAssetAddress[currentDestinationChain.networkId] : feeAsset.address, // ROUTE on Polygon
+        'feeTokenAddress': feeAsset.native ? nativeAssetAddress[currentSourceChain.networkId] : feeAsset.address, // ROUTE on Polygon
         'slippageTolerance': slippageTolerance,
         'widgetId': widgetId
       }
@@ -2039,28 +2039,24 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
 
     if (depositSuccess) {
       setBalanceTrigger((balanceTrigger) => !balanceTrigger);
-      if(currentSourceChain.networkId===currentDestinationChain.networkId){
-        setAnimationState("final");
-        setTxExplorer(explorerLinks[currentSourceChain.networkId] + tx?.hash);
-        setAnimationType("");
-        setBalanceTrigger((balanceTrigger) => !balanceTrigger);
-        setDestinationInput("");
-        setCurrentInputValue(0);
-        setSourceInput("");
-        setSrcPriceImpact("-");
-        setDstPriceImpact("-");
-        setShowTransactionSuccessful(true);
-        setTimeout(() => {
-          setAnimationState("initial");
-        }, 10000);
-      }
     } else {
       if(currentSourceChain.networkId!==currentDestinationChain.networkId){
         setAnimationState("initial");
         setAnimationType("");
       }else{
-          setAnimationState("initial");
+        setAnimationState("final");
+          setTxExplorer(explorerLinks[currentSourceChain.networkId] + tx?.hash);
           setAnimationType("");
+          setBalanceTrigger((balanceTrigger) => !balanceTrigger);
+          setDestinationInput("");
+          setCurrentInputValue(0);
+          setSourceInput("");
+          setSrcPriceImpact("-");
+          setDstPriceImpact("-");
+          setShowTransactionSuccessful(true);
+          setTimeout(() => {
+            setAnimationState("initial");
+          }, 10000);
       }
       sourceWeb3Provider?.eth.clearSubscriptions();
       destinationWeb3Provider?.eth.clearSubscriptions();
@@ -2569,7 +2565,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     let approvalTx: boolean | undefined;
     let tx: any;
     if (routerObject) {
-      routerObject.approveSourceToken(
+      tx = await routerObject.approveSourceToken(
         currentSourceAsset.address,
         currentAccountAddress,
         sourceInfiniteApproval
@@ -2579,11 +2575,12 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
             currentSourceAsset.decimals),
         currentDestinationChain.networkId,
         signer
-      ).then((res: any) => {
-        // setGasObjectSdk(res)
-        console.log("approval::", res)
-        tx = res
-      })
+      )
+      // ).then((res: any) => {
+      //   // setGasObjectSdk(res)
+      //   console.log("approval::", res)
+      //   tx = res
+      // })
       console.log("Source approval tx hash -", tx);
       let result = tx ? await provider.waitForTransaction(tx.hash) : false;
       if (result?.status?.toString() == "1") {
@@ -2706,18 +2703,14 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     let approvalTx: boolean | undefined;
     let tx: any;
     if (routerObject) {
-      routerObject.approveFeeToken(
+      tx = await routerObject.approveFeeToken(
         feeAsset.address,
         currentAccountAddress,
         feeInfiniteApproval
-          ? formatDecimals(ethers.constants.MaxUint256, feeAsset.decimals)
-          : formatDecimals(bridgeFee.toString(), feeAsset.decimals),
+          ? ethers.constants.MaxUint256
+          : expandDecimals(bridgeFee.toString(), feeAsset.decimals),
         signer
-      ).then((res: any) => {
-        // setGasObjectSdk(res)
-        console.log("approval::", res)
-        tx = res
-      })
+      )
       console.log("Fee approval tx hash -", tx);
       let result = tx ? await provider.waitForTransaction(tx.hash) : false;
       if (result?.status == 1) {
