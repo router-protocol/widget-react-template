@@ -1977,7 +1977,6 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
   //   },
   //   [currentSourceChain, currentDestinationChain]
   // );
-
   const handleSwap = useCallback(async () => {
     if (pathFetching) {
       return;
@@ -2039,25 +2038,24 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
 
     if (depositSuccess) {
       setBalanceTrigger((balanceTrigger) => !balanceTrigger);
-    } else {
-      if(currentSourceChain.networkId!==currentDestinationChain.networkId){
-        setAnimationState("initial");
-        setAnimationType("");
-      }else{
+      if(currentSourceChain.networkId===currentSourceChain.networkId){
         setAnimationState("final");
-          setTxExplorer(explorerLinks[currentSourceChain.networkId] + tx?.hash);
-          setAnimationType("");
-          setBalanceTrigger((balanceTrigger) => !balanceTrigger);
-          setDestinationInput("");
-          setCurrentInputValue(0);
-          setSourceInput("");
-          setSrcPriceImpact("-");
-          setDstPriceImpact("-");
-          setShowTransactionSuccessful(true);
-          setTimeout(() => {
-            setAnimationState("initial");
-          }, 10000);
+        setTxExplorer(explorerLinks[currentSourceChain.networkId] + tx?.hash);
+        setAnimationType("");
+        setBalanceTrigger((balanceTrigger) => !balanceTrigger);
+        setDestinationInput("");
+        setCurrentInputValue(0);
+        setSourceInput("");
+        setSrcPriceImpact("-");
+        setDstPriceImpact("-");
+        setShowTransactionSuccessful(true);
+        setTimeout(() => {
+          setAnimationState("initial");
+        }, 10000);
       }
+    } else {
+      setAnimationState("initial");
+      setAnimationType("");
       sourceWeb3Provider?.eth.clearSubscriptions();
       destinationWeb3Provider?.eth.clearSubscriptions();
     }
