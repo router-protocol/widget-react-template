@@ -219,7 +219,6 @@ const SwapVisualSameChain = ({
   // const showCheckPoint2 = animationState!=='initial' && animationType==='path_23' || animationState==='final'
   const pathArray = path !== "" || !path ? path?.split("->") : [];
   const pathRoute = pathArray?.slice(1, pathArray.length - 1);
-  console.log("pahuch gaya")
   if (!pathRoute) return <></>
   return (
     <Wrapper>

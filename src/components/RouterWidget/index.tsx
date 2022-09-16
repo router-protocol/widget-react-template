@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Background from './Background'
 import Header from './component/Header'
+import { assetList, AssetType } from './config/asset'
 import chainLookUp from './config/chainLookUp'
 import { NetworkType } from './config/network'
 import Swap from './Swap'
@@ -67,6 +68,10 @@ export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId
   const [currentAccountAddress, setCurrentAccountAddress] = useState(accountAddress)
   const [isWalletConnected, setIsWalletConnected] = useState(false)
   const [networkId, setNetworkId] = useState('')
+  const [currentSourceAsset, setCurrentSourceAsset] = useState(assetList[fromChain !== "" ? fromChain : DEFAULT_SOURCE_NETWORK_ID].find((item: AssetType) => item.address.toLowerCase() === (fromToken !== "" ? fromToken : DEFAULT_SOURCE_TOKEN_ADDRESS).toLowerCase())??assetList[fromChain !== "" ? fromChain : DEFAULT_SOURCE_NETWORK_ID][0]);
+  const [currentSourceChain, setCurrentSourceChain] = useState<NetworkType>(chainLookUp[fromChain !== "" ? fromChain : DEFAULT_SOURCE_NETWORK_ID]);
+  const [currentDestinationAsset, setCurrentDestinationAsset] = useState(assetList[toChain !== "" ? toChain : DEFAULT_DESTINATION_NETWORK_ID].find((item: AssetType) => item.address.toLowerCase() === (toToken !== "" ? toToken : DEFAULT_DESTINATION_TOKEN_ADDRESS).toLowerCase())??assetList[toChain !== "" ? toChain : DEFAULT_DESTINATION_NETWORK_ID][0]);
+  const [currentDestinationChain, setCurrentDestinationChain] = useState<NetworkType>(chainLookUp[toChain !== "" ? toChain : DEFAULT_DESTINATION_NETWORK_ID]);
 
   const changeChainListener = useCallback(() => {
     const provider = window.walletProvider
@@ -113,6 +118,14 @@ export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId
           textColor={textColor}
           backgroundColor={backgroundColor}
           logoURI={logoURI}
+          currentSourceAsset={currentSourceAsset}
+          setCurrentSourceAsset={setCurrentSourceAsset}
+          currentDestinationAsset={currentDestinationAsset}
+          setCurrentDestinationAsset={setCurrentDestinationAsset}
+          currentSourceChain={currentSourceChain}
+          setCurrentSourceChain={setCurrentSourceChain}
+          currentDestinationChain={currentDestinationChain}
+          setCurrentDestinationChain={setCurrentDestinationChain}
         />
         <Swap
           currentNetwork={currentNetwork}
@@ -123,6 +136,14 @@ export default function RouterWidget({ useWidgetWallet, accountAddress, widgetId
           setCurrentAccountAddress={setCurrentAccountAddress}
           isWalletConnected={isWalletConnected}
           setIsWalletConnected={setIsWalletConnected}
+          currentSourceAsset={currentSourceAsset}
+          setCurrentSourceAsset={setCurrentSourceAsset}
+          currentDestinationAsset={currentDestinationAsset}
+          setCurrentDestinationAsset={setCurrentDestinationAsset}
+          currentSourceChain={currentSourceChain}
+          setCurrentSourceChain={setCurrentSourceChain}
+          currentDestinationChain={currentDestinationChain}
+          setCurrentDestinationChain={setCurrentDestinationChain}
           widgetId={widgetId}
           ctaColor={ctaColor}
           textColor={textColor}

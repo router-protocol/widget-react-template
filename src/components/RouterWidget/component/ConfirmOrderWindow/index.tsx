@@ -60,9 +60,8 @@ const MinReturnStatement = styled.div`
 `
 
 const TransactionDetailsWrapper = styled.div`
-    width: 100%;
+    width: 90%;
     height: 100%;
-    //background: ${({ theme }) => theme.bg4};
     padding: 0 20px;
     border-radius: 0 0 20px 20px;
     display: grid;
