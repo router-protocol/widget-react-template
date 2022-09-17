@@ -1883,7 +1883,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
       setAnimationType("path_IF")
     }
     setShowWaitingCard(false);
-    if (walletId === "injected") {
+    if (walletId === "injected" && currentSourceChain.networkId!==currentDestinationChain.networkId) {
       swapEventListeners(tx?.hash);
     }
     let result;
