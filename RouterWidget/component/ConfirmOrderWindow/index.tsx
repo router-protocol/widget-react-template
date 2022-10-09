@@ -60,9 +60,8 @@ const MinReturnStatement = styled.div`
 `
 
 const TransactionDetailsWrapper = styled.div`
-    width: 100%;
+    width: 90%;
     height: 100%;
-    //background: ${({ theme }) => theme.bg4};
     padding: 0 20px;
     border-radius: 0 0 20px 20px;
     display: grid;
@@ -71,7 +70,7 @@ const TransactionDetailsWrapper = styled.div`
 
 const ConfirmButton = styled(Button)<{ ctaColor: string, textColor: string }>`
 	&&&{
-    background: ${({ disabled, ctaColor }) => disabled ? (ctaColor ? ctaColor.concat("88") : "#00A0BE88") : ctaColor !== "" ? ctaColor : "#00A0BE"};
+    background: ${({ disabled, ctaColor }) => disabled ? (ctaColor !== "" ? ctaColor.concat("88") : "#00A0BE88") : ctaColor !== "" ? ctaColor : "#00A0BE"};
     color: #FFFFFF;
     font-family: 'Inter', sans-serif;
     font-size: 18px;
@@ -87,7 +86,7 @@ const ConfirmButton = styled(Button)<{ ctaColor: string, textColor: string }>`
 `
 const StyledCloseIcon = styled(CloseRoundedIcon) <{ textColor: string }>`
 	position: absolute;
-	color:white;
+	color:  ${({ textColor }) => textColor !== "" ? textColor : 'white'};
 	right: 15px;
 	top: 15px;
 	width: 1.7rem !important;

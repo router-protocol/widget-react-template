@@ -63,7 +63,7 @@ const ButtonWrapper = styled.div`
   margin: 10px 0px;
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  width: 90%;
   padding: 0 20px;
 `;
 
@@ -72,11 +72,11 @@ const ApproveButton = styled(Button)<{ ctaColor: string; textColor: string }>`
     background: ${({ disabled, ctaColor }) =>
       disabled
         ? "linear-gradient(0deg, rgba(88, 88, 99, 0.5), rgba(88, 88, 99, 0.5))"
-        : ctaColor
+        : ctaColor !== ""
         ? ctaColor
         : "#00A0BE"};
     color: ${({ disabled, textColor }) =>
-      disabled ? "#ffffff50" : textColor ? textColor : "#FFFFFF"};
+      disabled ? "#ffffff50" : textColor !== "" ? textColor : "#FFFFFF"};
     font-family: "Inter", sans-serif;
     font-size: 1rem;
     width: fit-content;

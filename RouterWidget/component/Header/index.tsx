@@ -12,6 +12,7 @@ import WalletBox from "../Wallets/WalletBox";
 import { NetworkType } from "../../config/network";
 import { useMediaQuery } from "@material-ui/core";
 import { MEDIA_WIDTHS } from "../../constant";
+import { AssetType } from "../../config/asset";
 // import { MEDIA_WIDTHS } from "../../constant";
 
 export const MAIN_LOGO_WIDTH = 12;
@@ -32,6 +33,14 @@ interface CustomProps {
   textColor: string;
   backgroundColor: string;
   logoURI: string;
+  currentSourceAsset: AssetType;
+  setCurrentSourceAsset: (e: AssetType) => void;
+  currentDestinationAsset: AssetType;
+  setCurrentDestinationAsset: (e: AssetType) => void;
+  currentSourceChain: NetworkType
+  setCurrentSourceChain: (e: NetworkType) => void;
+  currentDestinationChain: NetworkType;
+  setCurrentDestinationChain: (e: NetworkType) => void;
 }
 
 const HeaderWrapper = styled.div<{
@@ -206,7 +215,7 @@ const MainLogo = styled.img`
 `;
 
 
-const Header: React.FunctionComponent<CustomProps> = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, currentAccountAddress, setCurrentAccountAddress, isWalletConnected, setIsWalletConnected, networkId, setNetworkId, useWidgetWallet, ctaColor, textColor, backgroundColor, logoURI }: CustomProps) => {
+const Header: React.FunctionComponent<CustomProps> = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, currentAccountAddress, setCurrentAccountAddress, isWalletConnected, setIsWalletConnected, networkId, setNetworkId, useWidgetWallet, ctaColor, textColor, backgroundColor, logoURI, currentSourceAsset, setCurrentSourceAsset, currentDestinationAsset, setCurrentDestinationAsset, currentSourceChain, setCurrentSourceChain, currentDestinationChain, setCurrentDestinationChain} : CustomProps) => {
   //const [darkMode, toggleSetDarkMode] = useDarkModeManager();
   const upToSmall = useMediaQuery(`(max-width: ${MEDIA_WIDTHS.upToSmall}px)`);
   //const windowSize: WindowSizeType = useWindowSize()
@@ -279,6 +288,14 @@ const Header: React.FunctionComponent<CustomProps> = ({ currentNetwork, setCurre
         isWalletConnected={isWalletConnected}
         textColor={textColor}
         backgroundColor={backgroundColor}
+        currentSourceAsset={currentSourceAsset}
+        setCurrentSourceAsset={setCurrentSourceAsset}
+        currentDestinationAsset={currentDestinationAsset}
+        setCurrentDestinationAsset={setCurrentDestinationAsset}
+        currentSourceChain={currentSourceChain}
+        setCurrentSourceChain={setCurrentSourceChain}
+        currentDestinationChain={currentDestinationChain}
+        setCurrentDestinationChain={setCurrentDestinationChain}
       />
       {
         useWidgetWallet &&

@@ -50,9 +50,9 @@ import {
   getScale,
   expandDecimals,
   formatDecimals,
-  getFlagsArray,
 } from "../utils/oneSplitUtils";
 import {
+  DEFAULT_SOURCE_NETWORK_ID,
   IS_INTERNAL_MAINNET,
   MAX_THRESHOLD_FOR_SWAP,
   PATH_FINDER_ENDPOINT,
@@ -84,8 +84,8 @@ import HoverCard from "../component/HoverCard/HoverCard";
 import SwapVisual from "../component/SwapVisual";
 import SwapVisualSameChain from "../component/SwapVisual/SwapVisualSameChain";
 import SwapVisualMobile from "../component/SwapVisual/SwapVisualMobile"
-import { DEFAULT_DESTINATION_NETWORK_ID, DEFAULT_DESTINATION_TOKEN_ADDRESS, DEFAULT_SOURCE_NETWORK_ID, DEFAULT_SOURCE_TOKEN_ADDRESS } from "..";
-import { CoinType, LatestActivityType } from "../state/swap/hooks";
+// import { DEFAULT_DESTINATION_NETWORK_ID, DEFAULT_DESTINATION_TOKEN_ADDRESS, DEFAULT_SOURCE_NETWORK_ID, DEFAULT_SOURCE_TOKEN_ADDRESS } from "..";
+import { CoinType  } from "../state/swap/hooks";
 import { MEDIA_WIDTHS } from "../constant";
 import { RouterProtocol } from "@routerprotocol/router-js-sdk"
 import { JsonRpcProvider, Provider as ProviderType } from "@ethersproject/providers";
@@ -107,6 +107,14 @@ interface SwapInterFace {
   setCurrentAccountAddress: (e: string) => void;
   isWalletConnected: boolean;
   setIsWalletConnected: (e: boolean) => void;
+  currentSourceAsset: AssetType;
+  setCurrentSourceAsset: (e: AssetType) => void;
+  currentDestinationAsset: AssetType;
+  setCurrentDestinationAsset: (e: AssetType) => void;
+  currentSourceChain: NetworkType
+  setCurrentSourceChain: (e: NetworkType) => void;
+  currentDestinationChain: NetworkType;
+  setCurrentDestinationChain: (e: NetworkType) => void;
   widgetId: String;
   ctaColor: string;
   textColor: string;
@@ -344,33 +352,6 @@ const SwapButtonWrapperMobile = styled(SwapButtonWrapper)`
 		margin-top: 10px;   
   }
 `;
-// const EstimatedFeeBreakDownWrapper = styled.div`
-// 	position: absolute;
-// 	left: 48%;
-// 	top: 170%;
-// 	opacity: 0;
-// 	transition: all 0.4s ease-in-out;
-// `
-// const EstimatedFeeBreakDown = styled.div`
-// 	display: grid;
-// 	place-items: center;
-// 	width: 120px;
-// 	font-family: 'Inter', sans-serif;
-// 	font-size: 10px;
-// 	font-style: normal;
-// 	font-weight: 400;
-// 	line-height: 15px;
-// 	letter-spacing: 0em;
-// 	text-align: left;
-// 	color: #FFFFFF;
-// `
-
-// const HoverIcon1 = styled.img`
-// 	margin-left: 7px;
-// 	&:hover ~ ${EstimatedFeeBreakDownWrapper} {
-//     	opacity: 1;
-//   	}
-// `
 
 const HoverField = styled.div`
   width: 100%;
@@ -379,12 +360,6 @@ const HoverField = styled.div`
   justify-content: space-between;
   margin: 2px 0;
 `;
-// const StyledDivider = styled.div`
-// 	background: rgba(88, 88, 99, 0.4);
-// 	height: 1px;
-// 	width: 100%;
-// 	margin-bottom: 3px;
-// `
 
 const PriceImpactBreakdownWrapper = styled.div`
   position: absolute;
@@ -468,7 +443,7 @@ const StyledSettings = styled(SettingsIcon)`
   }
 `;
 
-const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, currentAccountAddress, setCurrentAccountAddress, isWalletConnected, setIsWalletConnected, widgetId, ctaColor, textColor, backgroundColor, fromChain, toChain, fromToken, toToken, srcChains, dstChains, srcTokens, dstTokens }: SwapInterFace) => {
+const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, currentAccountAddress, setCurrentAccountAddress, isWalletConnected, setIsWalletConnected, widgetId, ctaColor, textColor, backgroundColor, fromChain, toChain, fromToken, toToken, srcChains, dstChains, srcTokens, dstTokens, currentSourceAsset, setCurrentSourceAsset, currentDestinationAsset, setCurrentDestinationAsset, currentSourceChain, setCurrentSourceChain, currentDestinationChain, setCurrentDestinationChain }: SwapInterFace) => {
   const [tabValue, setTabValue] = useState(0);
 
   const [showSourceChainMenu, setShowSourceChainMenu] = useState(false);
@@ -480,11 +455,9 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
   const [showWaitingCard, setShowWaitingCard] = useState(false);
   const [showTransactionSuccessful, setShowTransactionSuccessful] = useState(false);
 
-  const [currentSourceAsset, setCurrentSourceAsset] = useState(assetList[fromChain !== "" ? fromChain : DEFAULT_SOURCE_NETWORK_ID].find((item: AssetType) => item.address.toLowerCase() === (fromToken !== "" ? fromToken : DEFAULT_SOURCE_TOKEN_ADDRESS).toLowerCase())??assetList[fromChain !== "" ? fromChain : DEFAULT_SOURCE_NETWORK_ID][0]);
-  const [currentSourceChain, setCurrentSourceChain] = useState<NetworkType>(chainLookUp[fromChain !== "" ? fromChain : DEFAULT_SOURCE_NETWORK_ID]);
+  
   const [currentSourceBalance, setCurrentSourceBalance] = useState("-");
-  const [currentDestinationAsset, setCurrentDestinationAsset] = useState(assetList[toChain !== "" ? toChain : DEFAULT_DESTINATION_NETWORK_ID].find((item: AssetType) => item.address.toLowerCase() === (toToken !== "" ? toToken : DEFAULT_DESTINATION_TOKEN_ADDRESS).toLowerCase())??assetList[toChain !== "" ? toChain : DEFAULT_DESTINATION_NETWORK_ID][0]);
-  const [currentDestinationChain, setCurrentDestinationChain] = useState<NetworkType>(chainLookUp[toChain !== "" ? toChain : DEFAULT_DESTINATION_NETWORK_ID]);
+  
   const [currentDestinationBalance, setCurrentDestinationBalance] = useState("-");
   const [currentInputValue, setCurrentInputValue] = useState(0);
   const [currentRecipientAddress, setCurrentRecipientAddress] = useState('');
@@ -533,9 +506,6 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
   );
   const [destTokenTvl, setDestTokenTvl] = useState<BigNumber | string>("-");
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
-
-  const [destStableTokenAmount, setDestStableTokenAmount] = useState("");
-  const [destStableTokenAddress, setDestStableTokenAddress] = useState("");
 
   const gasCoinTemp = Object.entries(chainCoinGas).reduce(
     (acc, item) => ({ ...acc, [item[1]["symbol"]]: "-" }),
@@ -603,12 +573,15 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
   const rpc = currentSourceChain.endpoint
   const provider: ProviderType = useMemo(() => new JsonRpcProvider(rpc), [rpc]);
   const [routerObject, setRouterObject] = useState<RouterProtocol>()
-  // const [gasObjectSdk, setGasObjectSdk] = useState<undefined | any[]>()
-  // const [getSourceTokenAllowance, setGetSourceTokenAllowance] = useState(second)
   const initialize = useCallback(
     async () => {
       const routerprotocol = new RouterProtocol("24", currentSourceChain.networkId, provider);
-      await routerprotocol.initailize()
+      try{
+        await routerprotocol.initailize()
+      }catch(e){
+        console.log("error in fetching router sdk initialization", e)
+      }
+      
       setRouterObject(routerprotocol)
     },
     [provider],
@@ -618,31 +591,6 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     initialize()
   }, [initialize])
 
-  // useEffect(()=>{
-  //   if(routerObject)
-  //   {
-  //     routerObject.getBridgeFee(currentDestinationChain.networkId).then((res:any[])=>{
-  //       setGasObjectSdk(res)
-  //       console.log("value::", gasObjectSdk)
-  //     })
-  //   }
-  // },[routerObject])
-
-  // useEffect(()=>{
-  //   if(routerObject)
-  //   {
-  //     routerObject.getSourceTokenAllowance(currentSourceAsset.address, currentDestinationChain.networkId, currentAccountAddress).then((res:any)=>{
-  //       // setGasObjectSdk(res)
-  //       console.log("Allowance::", res)
-  //     })
-  //   }
-  // },[routerObject])
-  // console.log(rpc)
-
-  //****/
-
-
-  //   const [walletId] = useWalletId();
   const elRef = useRef<null | HTMLDivElement>(null);
 
   const sourceProvider = useMemo(
@@ -728,44 +676,13 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
 
   const selectCurrentSourceAssetHandler = useCallback(
     (newSourceAsset: AssetType) => {
-      //setCurrentDestinationAsset('');
-      // let searchParams = new URLSearchParams(searchQuery);
       setCurrentSourceAsset(newSourceAsset);
-      // searchParams.delete("fromToken");
-      // searchParams.append("fromToken", newSourceAsset.address);
-      // setSearchQuery(searchParams.toString());
-      // history.replace({
-      //   pathname: location.pathname,
-      //   search: searchParams.toString(),
-      // });
-      //let nativeAsset = assetList[currentSourceChain.networkId].find(asset => asset.native)
-      // if(newSourceAsset.isFeeToken){
-      // 	setFeeAsset(newSourceAsset)
-      // }else{
-      // 	setFeeAsset(nativeAsset??assetList[currentSourceChain.networkId][0])
-      // }
-      // if(newSourceAsset.isLpToken){
-      // 	let asset = assetList[currentDestinationChain.networkId].filter(item => item.symbol===newSourceAsset.symbol)
-      // 	setCurrentDestinationAsset(asset[0])
-      // }
-      // if(currentDestinationAsset&&currentDestinationAsset.isLpToken){
-      // 	let asset = assetList[currentDestinationChain.networkId].filter(item => item.symbol===newSourceAsset.symbol)
-      // 	setCurrentDestinationAsset(asset[0])
-      // }
       setShowSourceAssetMenu(false);
     },
     []
   );
   const selectCurrentSourceChainHandler = useCallback(
     (newSourceChain: NetworkType) => {
-      //setCurrentSourceAsset('');
-
-      // if(_.isEqual(currentDestinationChain, newSourceChain)) {
-      // 	let current = Number(newSourceChain.id)
-      // 	let index = (current===chains.length)?0:current
-      // 	setCurrentDestinationChain(chains[index])
-      // }
-      // let searchParams = new URLSearchParams(searchQuery);
       if (currentDestinationChain.networkId === newSourceChain.networkId) {
         if (currentDestinationAsset.symbol === currentSourceAsset.symbol) {
           if (
@@ -781,14 +698,6 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
             );
           }
         }
-        //currentSourceAsset.isLpToken || currentSourceAsset.native || currentDestinationAsset.isLpToken || currentDestinationAsset.native
-        // if(currentSourceAsset.isLpToken || currentDestinationAsset.isLpToken){
-        // 	let usdt = assetList[currentSourceChain.networkId].filter(item => item.symbol==='USDT')
-        // 	setCurrentSourceAsset(usdt[0])
-        // 	setFeeAsset(usdt[0])
-        // 	let route = assetList[currentDestinationChain.networkId].filter(item => item.symbol==='ROUTE')
-        // 	setCurrentDestinationAsset(route[0])
-        // }
       }
 
       //Replacing the old asset with same asset on new chain
@@ -821,29 +730,10 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
             });
           });
       }
-      //const newfeeAsset =  assetList[newSourceChain.networkId].find(item => item.symbol===feeAsset.symbol)
-      //let nativeAsset = assetList[currentSourceChain.networkId].find(asset => asset.native)
       setCurrentSourceAsset(
         newAsset ?? assetList[newSourceChain.networkId][0]
       );
-      // searchParams.delete("fromToken");
-      // searchParams.append(
-      //   "fromToken",
-      //   newAsset?.address ?? assetList[newSourceChain.networkId][0].address
-      // );
-      // history.replace({
-      //   pathname: location.pathname,
-      //   search: searchParams.toString(),
-      // });
-      //setFeeAsset(newfeeAsset?.isFeeToken?newfeeAsset:nativeAsset??assetList[currentSourceChain.networkId][0])
       setCurrentSourceChain(newSourceChain);
-      // searchParams.delete("fromChain");
-      // searchParams.append("fromChain", newSourceChain.networkId);
-      // setSearchQuery(searchParams.toString());
-      // history.replace({
-      //   pathname: location.pathname,
-      //   search: searchParams.toString(),
-      // });
       setShowSourceChainMenu(false);
     },
     [
@@ -859,24 +749,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
   const selectCurrentDestinationAssetHandler = useCallback(
     (newDestinationAsset: AssetType) => {
       setCurrentDestinationAsset(newDestinationAsset);
-      // if(newDestinationAsset.isLpToken){
-      // 	let asset = assetList[currentSourceChain.networkId].filter(item => item.symbol===newDestinationAsset.symbol)
-      // 	setCurrentSourceAsset(asset[0])
-      // 	setFeeAsset(asset[0])
-      // }
-      // if(currentSourceAsset&&currentSourceAsset.isLpToken){
-      // 	let asset = assetList[currentSourceChain.networkId].filter(item => item.symbol===newDestinationAsset.symbol)
-      // 	setFeeAsset(asset[0])
-      // }
       setShowDestinationAssetMenu(false);
-      // let searchParams = new URLSearchParams(searchQuery);
-      // searchParams.delete("toToken");
-      // searchParams.append("toToken", newDestinationAsset.address);
-      // setSearchQuery(searchParams.toString());
-      // history.replace({
-      //   pathname: location.pathname,
-      //   search: searchParams.toString(),
-      // });
     },
     []
   );
@@ -891,38 +764,10 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
             currentDestinationAsset.symbol
           ) {
             setCurrentSourceAsset(assetList[currentSourceChain.networkId][1]);
-            // searchParams.delete("fromToken");
-            // searchParams.append(
-            //   "fromToken",
-            //   assetList[currentSourceChain.networkId][1].address
-            // );
-            // history.replace({
-            //   pathname: location.pathname,
-            //   search: searchParams.toString(),
-            // });
-            //setFeeAsset(nativeAsset)
           } else {
             setCurrentSourceAsset(assetList[currentSourceChain.networkId][0]);
-            // searchParams.delete("fromToken");
-            // searchParams.append(
-            //   "fromToken",
-            //   assetList[currentSourceChain.networkId][0].address
-            // );
-            // history.replace({
-            //   pathname: location.pathname,
-            //   search: searchParams.toString(),
-            // });
-            //setFeeAsset(nativeAsset)
           }
         }
-        //currentSourceAsset.isLpToken || currentSourceAsset.native || currentDestinationAsset.isLpToken || currentDestinationAsset.native
-        // if(currentSourceAsset.isLpToken || currentDestinationAsset.isLpToken){
-        // 	let usdt = assetList[currentSourceChain.networkId].filter(item => item.symbol==='USDT')
-        // 	setCurrentSourceAsset(usdt[0])
-        // 	setFeeAsset(usdt[0])
-        // 	let route = assetList[currentDestinationChain.networkId].filter(item => item.symbol==='ROUTE')
-        // 	setCurrentDestinationAsset(route[0])
-        // }
       }
 
       if (newDestinationChain.networkId === "65") {
@@ -1109,32 +954,6 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     setSourceInput,
   ]);
 
-  // const animationTest = () => {
-  // 	setTimeout(() => {
-  // 		setAnimationState('animate')
-  // 		setAnimationType('path_01')
-  // 	}, 4000)
-  // 	setTimeout(() => {
-  // 		//setAnimationState('animate')
-  // 		setAnimationType('path_12')
-  // 	}, 8000)
-  // 	setTimeout(() => {
-  // 		//setAnimationState('animate')
-  // 		setAnimationType('path_23')
-  // 	}, 12000)
-  // 	setTimeout(() => {
-  // 		setAnimationState('final')
-  // 		setAnimationType('')
-  // 	}, 16000)
-  // 	setTimeout(() => {
-  // 		setAnimationState('initial')
-  // 	}, 20000)
-  // }
-
-  // useEffect(() => {
-  // 	animationTest()
-  // }, [])
-
   let depositFilter = useMemo(() => {
     return {
       address: currentSourceChain.opts.bridge,
@@ -1167,6 +986,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
   let destinationWeb3Provider: any;
   const swapEventListeners = useCallback(
     async (tx: any) => {
+      console.log("EVENT LISTENING =>");
       let sourceWeb3Provider = new Web3(
         new Web3.providers.HttpProvider(currentSourceChain.endpoint)
       );
@@ -1181,21 +1001,29 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
         new Web3.providers.WebsocketProvider(currentDestinationChain.socket)
       );
 
-      console.log("trigger events txhash", tx)
-      const dateString = new Date().toLocaleString();
+      console.log("trigger events txhash", tx);
+      // const latestActivity: LatestActivityType[] = currentLatestActivity
+      //   ? [...currentLatestActivity]
+      //   : [];
+      // const dateString = new Date().toLocaleString();
 
       let executionTimer: any;
 
       let depositNonce: any = null;
 
       let dstBlk: number;
-
-      dstBlk = await dstWeb3JSONProvider.eth.getBlockNumber();
-
+      try {
+        console.log("Fetching dstBlk =>");
+        dstBlk = await dstWeb3JSONProvider.eth.getBlockNumber();
+        console.log("dstBlk =>", dstBlk);
+      } catch (e) {
+        console.log("dstBlk fetch error =>", e);
+      }
       let depositFallbackId = setInterval(async () => {
         if (tx === null) {
         } else {
           try {
+            console.log("depositFallbackId =>");
             const txReceipt =
               await srcWeb3JSONProvider.eth.getTransactionReceipt(tx);
             if (txReceipt?.status) {
@@ -1228,6 +1056,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
               setCurrentInputValue(0);
               setSrcPriceImpact("-");
               setDstPriceImpact("-");
+              //setBridgeFee('-')
               //sourceWeb3Provider.eth.clearSubscriptions()
               //destinationWeb3Provider.eth.clearSubscriptions()
             }
@@ -1243,6 +1072,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
           "logs",
           depositFilter,
           async (err: any, data: any) => {
+            console.log("Start Listening Deposit Event =>");
             if (err) {
               console.log("Deposit Logs New- ", err);
               sourceWeb3Provider.eth.clearSubscriptions();
@@ -1311,8 +1141,8 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
           );
           const proposalLogIndex = decodedProposalLogs.findIndex(
             (data: any) =>
-              data.status.toString() === "2" &&
-              data.depositNonce.toString() == depositNonce.toString()
+              data?.status?.toString() === "2" &&
+              data?.depositNonce?.toString() == depositNonce?.toString()
           );
           if (proposalLogIndex !== -1) {
             console.log("data for proposal passed event ------->");
@@ -1421,6 +1251,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
             setSrcPriceImpact("-");
             setDstPriceImpact("-");
             //setBridgeFee('-')
+
             depositNonce = null;
             console.log("Settellement Event Fallback Success");
             clearTimeout(executionTimer);
@@ -1462,6 +1293,11 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
                 console.log("Decoded Proposal Passed Log ==> ", decodedLog);
                 setAnimationType("path_23");
                 clearInterval(proposalPassInterval);
+                //fallback
+                // setTimeout(() =>{
+                // 	setAnimationState('initial')
+                // 	setAnimationType('')
+                // },60000)
               }
             }
           );
@@ -1615,15 +1451,15 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
   }, [currentDestinationChain, currentSourceChain, currentDestinationAsset]);
 
   const fetchPathFinderData = useCallback(
-    async (cancelToken: any) => {
+    async (cancelToken: any) => { 
       const args = {
-        'fromTokenAddress': currentSourceAsset.address, // USDC on Polygon
-        'toTokenAddress': currentDestinationAsset.address, // USDC on Fantom
+        'fromTokenAddress': currentSourceAsset.native ? nativeAssetAddress[currentSourceChain.networkId] : currentSourceAsset.address, // USDC on Polygon
+        'toTokenAddress': currentDestinationAsset.native ? nativeAssetAddress[currentDestinationChain.networkId] : currentDestinationAsset.address, // USDC on Fantom
         'amount': expandDecimals(currentInputValue, currentSourceAsset.decimals).toString(), // 10 USDC (USDC token contract on Polygon has 6 decimal places)
         'fromTokenChainId': currentSourceChain.networkId, // Polygon
         'toTokenChainId': currentDestinationChain.networkId, // Fantom
         'userAddress': currentAccountAddress,
-        'feeTokenAddress': feeAsset.address, // ROUTE on Polygon
+        'feeTokenAddress': feeAsset.native ? nativeAssetAddress[currentSourceChain.networkId] : feeAsset.address, // ROUTE on Polygon
         'slippageTolerance': slippageTolerance,
         'widgetId': widgetId
       }
@@ -1676,45 +1512,44 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     let bridgeFee = "-";
 
     if (currentSourceChain.networkId !== currentDestinationChain.networkId) {
-      try {
         if (routerObject) {
-          routerObject.getBridgeFee(currentDestinationChain.networkId).then((res: any[]) => {
-            const arrangedFeeArray = feeTokenList.map((i: any) => res.filter((j: any) => i.address === j.address)[0])
-            const feeArray = arrangedFeeArray.map((i: any) => [i?.transferFee, i?.exchangeFee, true])
-            const feeObj: FeeObjectType = {};
-            feeTokenList.forEach((feeToken, index) => {
-              feeObj[feeToken.symbol] = {
-                fee: [...feeArray[index]],
-                feeAmount: formatDecimals(feeArray[index][1], feeToken.decimals),
-                feeUsd:
-                  coinPriceList[feeToken.symbol] === "-"
-                    ? "-"
-                    : fixedDecimalPlace(
-                      parseFloat(
-                        formatDecimals(feeArray[index][1], feeToken.decimals)
-                      ) * parseFloat(coinPriceList[feeToken.symbol]),
-                      2
-                    ),
-                show: feeArray[index][2],
-              };
-            });
-            console.log("feeObject", feeObj)
+          let res: any;
+          try{
+              res = await routerObject.getBridgeFee(currentDestinationChain.networkId)
+              const arrangedFeeArray = feeTokenList.map((i: any) => res.filter((j: any) => i.address === j.address)[0])
+              const feeArray = arrangedFeeArray.map((i: any) => [i?.transferFee, i?.exchangeFee, true])
+              const feeObj: FeeObjectType = {};
+              feeTokenList.forEach((feeToken, index) => {
+                feeObj[feeToken.symbol] = {
+                  fee: [...feeArray[index]],
+                  feeAmount: formatDecimals(feeArray[index][1], feeToken.decimals),
+                  feeUsd:
+                    coinPriceList[feeToken.symbol] === "-"
+                      ? "-"
+                      : fixedDecimalPlace(
+                        parseFloat(
+                          formatDecimals(feeArray[index][1], feeToken.decimals)
+                        ) * parseFloat(coinPriceList[feeToken.symbol]),
+                        2
+                      ),
+                  show: feeArray[index][2],
+                };
+              });
+              console.log("feeObject", feeObj)
 
-            setFeePriceFeed(feeObj);
+              setFeePriceFeed(feeObj);
 
-            const newFeeTokenList: AssetType[] = [];
-            feeTokenList.map(
-              (feeToken, index) =>
-                feeArray[index][2] && newFeeTokenList.push(feeToken)
-            );
+              const newFeeTokenList: AssetType[] = [];
+              feeTokenList.map(
+                (feeToken, index) =>
+                  feeArray[index][2] && newFeeTokenList.push(feeToken)
+              );
 
-            console.log("filtered newFeeTokenList", newFeeTokenList);
-          })
+              console.log("filtered newFeeTokenList", newFeeTokenList);
+          }catch(e){
+            console.log("error in fetching bridge fee:", e)
+          }
         }
-
-      } catch (e) {
-        console.log("Fee Error - ", e);
-      }
     }
 
     if (
@@ -1827,30 +1662,83 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
         }
       );
       console.log("pathFinderData - ", pathFinderData);
+      if (pathFinderData === null) {
+        return;
+      } else if (pathFinderData === undefined) {
+        console.log("error from pf ");
+        setPathFetching(false);
+        return;
+      }
       if (
         currentSourceChain.networkId !== currentDestinationChain.networkId &&
-        pathFinderData?.source?.stableReserveAsset && pathFinderData?.source?.asset?.address.toLowerCase() !== pathFinderData?.source?.stableReserveAsset?.address.toLowerCase()
+        pathFinderData.source.stableReserveAsset &&
+        pathFinderData?.source?.asset?.address.toLowerCase() !==
+        pathFinderData?.source?.stableReserveAsset?.address.toLowerCase()
       ) {
-        feePriceFeed && setBridgeFee(feePriceFeed[feeAsset?.symbol]?.fee[1])
+        feePriceFeed && setBridgeFee(feePriceFeed[feeAsset?.symbol]?.fee[1]);
       }
-      if (parseFloat(pathFinderData?.source?.priceImpact) >= 10 || parseFloat(pathFinderData?.destination?.priceImpact) >= 10) {
-        setShowPriceImpactWarning(true)
+      if (
+        parseFloat(pathFinderData?.source?.priceImpact) >= 10 ||
+        parseFloat(pathFinderData?.destination?.priceImpact) >= 10
+      ) {
+        setShowPriceImpactWarning(true);
       }
-      setSrcPriceImpact(pathFinderData?.source?.priceImpact)
-      setSrcPath(pathFinderData?.source?.path)
-      setSrcFlags(pathFinderData?.source?.flags)
-      setSrcDistribution(pathFinderData?.source?.distribution)
-      setDstPriceImpact(pathFinderData?.destination?.priceImpact)
-      if (currentSourceAsset.resourceId !== '' && currentSourceAsset.resourceId.toLowerCase() === pathFinderData?.source?.stableReserveAsset?.resourceID) {
-        setGasLimit(gasLimitForStable)
+      setSrcPriceImpact(pathFinderData?.source?.priceImpact);
+      setSrcPath(pathFinderData?.source?.path);
+      setSrcFlags(pathFinderData?.source?.flags);
+      setSrcDistribution(pathFinderData?.source?.distribution);
+      setOneInchDataTxn(pathFinderData?.source?.dataTx ?? "");
+      //console.log('Stable reserve amount - ',ethers.BigNumber.from(pathFinderData.source.stableReserveAmount))
+      if (currentSourceChain.networkId !== currentDestinationChain.networkId) {
+        const stableAsset = assetList[currentSourceChain.networkId].filter(
+          (asset) =>
+            pathFinderData?.source?.stableReserveAsset?.address.toLowerCase() ===
+            asset.address.toLowerCase()
+        )[0];
+        if (
+          stableAsset &&
+          (pathFinderData?.source?.stableReserveAsset?.address.toLowerCase() ===
+            currentSourceAsset.address.toLowerCase() ||
+            (stableAsset.lpAddress &&
+              currentSourceAsset.address.toLowerCase() ===
+              stableAsset.lpAddress.toLowerCase()))
+        ) {
+          setStableReserveAmount(pathFinderData?.source?.stableReserveAmount);
+        } else {
+          setStableReserveAmount(
+            calcSlippage(
+              pathFinderData?.source?.stableReserveAmount,
+              (parseFloat(slippageTolerance) / 2).toString(),
+              getScale(parseFloat(slippageTolerance) / 2)
+            )
+          );
+        }
       } else {
-        setGasLimit(gasLimitNormal)
+        setStableReserveAmount(
+          calcSlippage(
+            pathFinderData?.source?.stableReserveAmount,
+            (parseFloat(slippageTolerance) / 2).toString(),
+            getScale(parseFloat(slippageTolerance) / 2)
+          )
+        );
+        //setStableReserveAmount((pathFinderData.source.stableReserveAmount))
+      }
+      setDstPriceImpact(pathFinderData?.destination?.priceImpact);
+      if (
+        currentSourceAsset.resourceId !== "" &&
+        currentSourceAsset.resourceId.toLowerCase() ===
+        pathFinderData?.source?.stableReserveAsset?.resourceID
+      ) {
+        setGasLimit(gasLimitForStable);
+      } else {
+        setGasLimit(gasLimitNormal);
       }
       //console.log('Stable reserve amount - ',ethers.BigNumber.from(pathFinderData.destination.tokenAmount))
       if (currentSourceChain.networkId === currentDestinationChain.networkId) {
         setBridgeFee(ethers.BigNumber.from(0))
         setPathString(pathFinderData?.source?.tokenPath)
         setAmountToBeReceived(calcSlippage(pathFinderData?.destination?.tokenAmount, slippageTolerance))
+        console.log("tokenAmount::", pathFinderData?.destination?.tokenAmount)
         console.log('Formatted Amount -', formatDecimals(pathFinderData?.destination?.tokenAmount, currentDestinationAsset.decimals))
         setDestinationInput(getFlooredFixed(Number(formatDecimals(pathFinderData?.destination?.tokenAmount, currentDestinationAsset.decimals)), 6))
         setFinalReceivedAmount(getFlooredFixed(Number(formatDecimals(pathFinderData?.destination?.tokenAmount, currentDestinationAsset.decimals)), 6))
@@ -1947,35 +1835,6 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     }
   }, [currentSourceAsset, feeAsset, bridgeFee, currentInputValue]);
 
-  // const widgetTransaction = useCallback(
-  //   async (txHash: string) => {
-  //     try {
-  //       console.log(
-  //         "Widget Transaction - ",
-  //         txHash,
-  //         widgetId,
-  //         currentSourceChain.networkId,
-  //         currentDestinationChain.id
-  //       );
-  //       const response = await (
-  //         await fetch(`${ROUTER_STATS_HOST}/api/widget?widgetId=${widgetId}`, {
-  //           headers: { "Content-Type": "application/json" },
-  //           method: "POST",
-  //           body: JSON.stringify({
-  //             sourceNetworkId: currentSourceChain.networkId,
-  //             destinationChainId: currentDestinationChain.id,
-  //             sourceTransactionHash: txHash,
-  //           }),
-  //         })
-  //       ).json();
-  //       console.log("widget API response=>", response);
-  //     } catch (e) {
-  //       console.log("widget transaction error =>", e);
-  //     }
-  //   },
-  //   [currentSourceChain, currentDestinationChain]
-  // );
-
   const handleSwap = useCallback(async () => {
     if (pathFetching) {
       return;
@@ -1987,12 +1846,12 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     setShowConfirmOrderWindow(false);
     setShowWaitingCard(true);
 
-    if (isMobile || walletId !== "injected") {
+    if ((isMobile || walletId !== "injected")&&currentSourceChain.networkId!==currentDestinationChain.networkId) {
       swapEventListeners(null);
     }
     let tx;
     try {
-      tx = tx = await signer.sendTransaction({ ...swapExecutionData });
+      tx = await signer.sendTransaction({ ...swapExecutionData });
     } catch (e) {
       if (e.code?.toString() === "4001") {
         setShowWaitingCard(false);
@@ -2018,9 +1877,13 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     }
     setAnimationState("animate");
     upToSmall && elRef && elRef.current && elRef.current.scrollIntoView();
-    setAnimationType("path_01");
+    if(currentSourceChain.networkId!==currentDestinationChain.networkId){
+      setAnimationType("path_01");
+    }else{
+      setAnimationType("path_IF")
+    }
     setShowWaitingCard(false);
-    if (walletId === "injected") {
+    if (walletId === "injected" && currentSourceChain.networkId!==currentDestinationChain.networkId) {
       swapEventListeners(tx?.hash);
     }
     let result;
@@ -2030,9 +1893,24 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
       console.log(e);
     }
     const depositSuccess = result?.status === 1 ? true : false;
-
+    console.log("deposits value::", depositSuccess)
     if (depositSuccess) {
       setBalanceTrigger((balanceTrigger) => !balanceTrigger);
+      if(currentSourceChain.networkId===currentSourceChain.networkId){
+        setAnimationState("final");
+        setTxExplorer(explorerLinks[currentSourceChain.networkId] + tx?.hash);
+        setAnimationType("");
+        setBalanceTrigger((balanceTrigger) => !balanceTrigger);
+        setDestinationInput("");
+        setCurrentInputValue(0);
+        setSourceInput("");
+        setSrcPriceImpact("-");
+        setDstPriceImpact("-");
+        setShowTransactionSuccessful(true);
+        setTimeout(() => {
+          setAnimationState("initial");
+        }, 10000);
+      }
     } else {
       setAnimationState("initial");
       setAnimationType("");
@@ -2065,15 +1943,6 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
       setAlertMessage(getErrorMessage1(1, currentSourceChain.name));
       setIsSwapDisabled(true);
     }
-    // else if (currentSourceAsset === "") {
-    //   //setAlertOpen(true);
-    //   setAlertMessage(getErrorMessage1(2, ""));
-    //   setIsSwapDisabled(true);
-    // } else if (currentDestinationAsset === "") {
-    //   //setAlertOpen(true);
-    //   setAlertMessage(getErrorMessage1(3, ""));
-    //   setIsSwapDisabled(true);
-    // } 
     else if (
       !IS_INTERNAL_MAINNET &&
       currentInputValue *
@@ -2164,10 +2033,6 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
       return "-";
     }
 
-    // if (destinationInput === 'Calculating' || destinationInput === 'Calculating.' || destinationInput === 'Calculating..' || destinationInput === 'Calculating...') {
-    // 	return '-'
-    // }
-
     return `${fixedDecimalPlace(
       formatDecimals(amountToBeReceived, currentDestinationAsset.decimals),
       2
@@ -2220,71 +2085,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
   ]);
 
   const getEstimatedFee = useCallback((): any => {
-    if (typeof gasPrice === "string") return; //['-','-','-','-']
-    if (
-      currentSourceChain.networkId !== currentDestinationChain.networkId &&
-      bridgeFee === "-"
-    )
-      return;
-    if (
-      gasCoinPrice[chainCoinGas[currentSourceChain.networkId].symbol] === "-" ||
-      coinPriceList[currentSourceAsset && currentSourceAsset.symbol] === "-" ||
-      gasLimit === "-"
-    )
-      return; //['-','-','-']
-    if (currentSourceChain.networkId !== currentDestinationChain.networkId) {
-      //if(typeof(bridgeGas)==='string')return
-      const formattedBridgeFee = formatDecimals(
-        Number(bridgeFee),
-        feeAsset.decimals
-      );
-      // console.log('bridge fee - ',bridgeFee)
-      // console.log('formattedBridgeFee',formattedBridgeFee)
-      const gasLimitBigNumber: BigNumber = ethers.BigNumber.from(gasLimit);
-      const networkFee = gasPrice.mul(gasLimitBigNumber);
-      //console.log(gasPrice, gasLimit)
-      //console.log('networkFee',networkFee)
-      const formattedNetworkFee = formatDecimals(
-        Number(networkFee),
-        chainCoinGas[currentSourceChain.networkId].decimals
-      ); //Number(networkFee)/10**Number(chainCoinGas[currentSourceChain.networkId].decimals)//formatDecimals(Number(networkFee), chainCoinGas[currentSourceChain.networkId].decimals)
-      //console.log('formattedNetworkFee',formattedBridgeFee)
-      const dollarBridgeFee = parseFloat(formattedBridgeFee);
-      const dollarNetworkFee =
-        parseFloat(formattedNetworkFee.toString()) *
-        parseFloat(
-          gasCoinPrice[chainCoinGas[currentSourceChain.networkId].symbol]
-        );
-      // setTotalEstimatedFee((dollarBridgeFee + dollarNetworkFee).toFixed(4))
-      // setBreakDownBridgeFee(dollarBridgeFee.toFixed(4))
-      // setBreakdownNetworkFee(dollarNetworkFee.toFixed(4))
-      setEstimatedFee([
-        (dollarBridgeFee + dollarNetworkFee).toFixed(4),
-        fixedDecimalPlace(formattedBridgeFee, 4),
-        dollarNetworkFee.toFixed(4),
-        networkFee,
-      ]);
-      //return [(dollarBridgeFee + dollarNetworkFee).toFixed(4), dollarBridgeFee.toFixed(4), dollarNetworkFee.toFixed(4),networkFee]
-      //console.log('usd value - ', gas)
-    } else {
-      const gasLimitBigNumber: BigNumber = ethers.BigNumber.from(gasLimit);
-      const networkFee = gasPrice.mul(gasLimitBigNumber);
-      const formattedNetworkFee = formatDecimals(
-        Number(networkFee),
-        chainCoinGas[currentSourceChain.networkId].decimals
-      );
-      const dollarNetworkFee =
-        parseFloat(formattedNetworkFee.toString()) *
-        parseFloat(
-          gasCoinPrice[chainCoinGas[currentSourceChain.networkId].symbol]
-        );
-      setEstimatedFee([
-        dollarNetworkFee.toFixed(4),
-        "-",
-        dollarNetworkFee.toFixed(4),
-        networkFee,
-      ]);
-    }
+    return
   }, [
     gasPrice,
     currentSourceChain,
@@ -2385,44 +2186,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     }
 
     if (currentSourceChain.networkId === currentDestinationChain.networkId) {
-      // if (estimatedFee[3] === '-' || gasBalance === '-') {
-      // 	setAlertOpen(true)
-      // 	setShowWarning(true)
-      // 	setAlertMessage(getErrorMessage1(11, ''))
-      // 	setTimeout(() => {
-      // 		setAlertOpen(false)
-      // 		setShowWarning(false)
-      // 	}, 5000)
-      // 	return
-      // }
-      // try{
-      // 	if(typeof(gasBalance)!=='string' && typeof(estimatedFee[3])!=='string'
-      // 		&& estimatedFee[3].gt(gasBalance)){
-      // 		setAlertOpen(true)
-      // 		setShowWarning(true)
-      // 		setAlertMessage(getErrorMessage1(9,chainCoinGas[currentSourceChain.networkId].symbol))
-      // 		setTimeout(() =>{
-      // 			setAlertOpen(false)
-      // 			setShowWarning(false)
-      // 		},5000)
-      // 		return
-      // 	}
-      // }catch(e){
-      // 	console.log(e)
-      // 	return
-      // }
     } else {
-      // if (bridgeFee === '-' || estimatedFee[3] === '-' || gasBalance === '-') {
-      //  setAlertOpen(true)
-      // setShowWarning(true)
-      // setAlertMessage(getErrorMessage1(11, ''))
-      // setTimeout(() => {
-      // 	setAlertOpen(false)
-      // 	setShowWarning(false)
-      // }, 5000)
-      // return
-      // }
-
       try {
         if (
           currentSourceAsset &&
@@ -2480,14 +2244,6 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
         typeof estimatedFee[3] !== "string" &&
         estimatedFee[3].gt(gasBalance)
       ) {
-        // setAlertOpen(true)
-        // setShowWarning(true)
-        // setAlertMessage(getErrorMessage1(9,chainCoinGas[currentSourceChain.networkId].symbol))
-        // setTimeout(() =>{
-        // 	setAlertOpen(false)
-        // 	setShowWarning(false)
-        // },5000)
-        // return
       }
     } catch (e) {
       console.log(e);
@@ -2537,126 +2293,57 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     const provider = window.modalProvider;
     const signer = provider.getSigner();
 
-    const latestActivity: LatestActivityType[] = [];
-    const dateString = new Date().toLocaleString();
-
     let approvalTx: boolean | undefined;
     let tx: any;
     if (routerObject) {
-      routerObject.approveSourceToken(
-        currentSourceAsset.address,
-        currentAccountAddress,
-        sourceInfiniteApproval
-          ? formatDecimals(
-            ethers.constants.MaxUint256,
-            currentSourceAsset.decimals
-          )
-          : currentInputValue,
-        currentDestinationChain.networkId,
-        signer
-      ).then((res: any) => {
-        // setGasObjectSdk(res)
-        console.log("approval::", res)
-        tx = res
-      })
-      console.log("Source approval tx hash -", tx);
-      let result = tx ? await provider.waitForTransaction(tx.hash) : false;
-      if (result?.status?.toString() == "1") {
-        approvalTx = true;
-        setSourceTokenAllowance(
+      try{
+        tx = await routerObject.approveSourceToken(
+          currentSourceAsset.address,
+          currentAccountAddress,
           sourceInfiniteApproval
-            ? formatDecimals(
-              ethers.constants.MaxUint256,
-              currentSourceAsset.decimals
-            )
-            : String(currentInputValue)
-        );
-        setShouldSourceApprove(false);
-      } else {
-        approvalTx = false;
-      }
-
-      if (approvalTx) {
-        if (
-          feeAsset.address.toLowerCase() ===
-          currentSourceAsset.address.toLowerCase() ||
-          !shouldFeeApprove
-        ) {
-          setShowApprovalWindow(false);
-          setShowConfirmOrderWindow(true);
+            ? 
+              ethers.constants.MaxUint256
+            : expandDecimals(currentInputValue,
+              currentSourceAsset.decimals),
+          currentDestinationChain.networkId,
+          signer
+        )
+        console.log("Source approval tx hash -", tx);
+        let result = tx ? await provider.waitForTransaction(tx.hash) : false;
+        console.log("Source approval tx hash result -", result);
+        if (result?.status?.toString() == "1") {
+          approvalTx = true;
+          setSourceTokenAllowance(
+            sourceInfiniteApproval
+              ? formatDecimals(
+                ethers.constants.MaxUint256,
+                currentSourceAsset.decimals
+              )
+              : String(currentInputValue)
+          );
+          setShouldSourceApprove(false);
+        } else {
+          approvalTx = false;
         }
-        latestActivity.push({
-          name: `Approve ${currentSourceAsset.symbol}`,
-          status: "Complete",
-          icon: "Approve",
-          date: dateString,
-          txUrl: explorerLinks[currentSourceChain.networkId] + tx?.hash,
-        });
-      } else {
-        // setAnimationState('initial')
-        // setAnimationType('')
-        // setShowWaitingCard(false)
+
+        if (approvalTx) {
+          if (
+            feeAsset.address.toLowerCase() ===
+            currentSourceAsset.address.toLowerCase() ||
+            !shouldFeeApprove
+          ) {
+            setShowApprovalWindow(false);
+            setShowConfirmOrderWindow(true);
+          }
+        } else {
+        }
+        setSourceApprovalLoading(false);
+      }catch(e){
+        setSourceApprovalLoading(false);
+        console.log("error in aprroving source token", e)
       }
-      setSourceApprovalLoading(false);
+      
     }
-    // let tx = await setApproval({
-    //   erc20Address: currentSourceAsset.address,
-    //   amount: sourceInfiniteApproval
-    //     ? formatDecimals(
-    //       ethers.constants.MaxUint256,
-    //       currentSourceAsset.decimals
-    //     )
-    //     : currentInputValue,
-    //   decimals: currentSourceAsset.decimals,
-    //   recipient: getSpenderAddress(),
-    //   provider: provider,
-    //   signer: signer,
-    // });
-
-    // // if (approvalTx === undefined) {
-    // // 	setAnimationState('initial')
-    // // 	setAnimationType('')
-    // // 	setShowWaitingCard(false)
-    // // }
-    // console.log("Source approval tx hash -", tx);
-    // let result = tx ? await provider.waitForTransaction(tx.hash) : false;
-    // if (result?.status?.toString() == "1") {
-    //   approvalTx = true;
-    //   setSourceTokenAllowance(
-    //     sourceInfiniteApproval
-    //       ? formatDecimals(
-    //         ethers.constants.MaxUint256,
-    //         currentSourceAsset.decimals
-    //       )
-    //       : String(currentInputValue)
-    //   );
-    //   setShouldSourceApprove(false);
-    // } else {
-    //   approvalTx = false;
-    // }
-
-    // if (approvalTx) {
-    //   if (
-    //     feeAsset.address.toLowerCase() ===
-    //     currentSourceAsset.address.toLowerCase() ||
-    //     !shouldFeeApprove
-    //   ) {
-    //     setShowApprovalWindow(false);
-    //     setShowConfirmOrderWindow(true);
-    //   }
-    //   latestActivity.push({
-    //     name: `Approve ${currentSourceAsset.symbol}`,
-    //     status: "Complete",
-    //     icon: "Approve",
-    //     date: dateString,
-    //     txUrl: explorerLinks[currentSourceChain.networkId] + tx?.hash,
-    //   });
-    // } else {
-    //   // setAnimationState('initial')
-    //   // setAnimationType('')
-    //   // setShowWaitingCard(false)
-    // }
-    // setSourceApprovalLoading(false);
   }, [
     currentSourceAsset,
     currentInputValue,
@@ -2675,24 +2362,18 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     const provider = window.modalProvider;
     const signer = provider?.getSigner();
 
-    const latestActivity: LatestActivityType[] = [];
-    const dateString = new Date().toLocaleString();
-
     let approvalTx: boolean | undefined;
     let tx: any;
     if (routerObject) {
-      routerObject.approveFeeToken(
+      try{
+        tx = await routerObject.approveFeeToken(
         feeAsset.address,
         currentAccountAddress,
         feeInfiniteApproval
-          ? formatDecimals(ethers.constants.MaxUint256, feeAsset.decimals)
-          : formatDecimals(bridgeFee.toString(), feeAsset.decimals),
+          ? ethers.constants.MaxUint256
+          : expandDecimals(bridgeFee.toString(), feeAsset.decimals),
         signer
-      ).then((res: any) => {
-        // setGasObjectSdk(res)
-        console.log("approval::", res)
-        tx = res
-      })
+      )
       console.log("Fee approval tx hash -", tx);
       let result = tx ? await provider.waitForTransaction(tx.hash) : false;
       if (result?.status == 1) {
@@ -2716,72 +2397,14 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
           setShowApprovalWindow(false);
           setShowConfirmOrderWindow(true);
         }
-        latestActivity.push({
-          name: `Approve ${currentSourceAsset.symbol}`,
-          status: "Complete",
-          icon: "Approve",
-          date: dateString,
-          txUrl: explorerLinks[currentSourceChain.networkId] + tx?.hash,
-        });
       } else {
-        // setAnimationState('initial')
-        // setAnimationType('')
-        // setShowWaitingCard(false)
       }
       setFeeApprovalLoading(false);
+    }catch(e){
+      setFeeApprovalLoading(false);
+      console.log("error in approving Fee token", e)
     }
-    // let tx = await setApproval({
-    //   erc20Address: feeAsset.address,
-    //   amount: feeInfiniteApproval
-    //     ? formatDecimals(ethers.constants.MaxUint256, feeAsset.decimals)
-    //     : formatDecimals(bridgeFee.toString(), feeAsset.decimals),
-    //   decimals: feeAsset.decimals,
-    //   recipient: currentSourceChain.opts.reserveHandler,
-    //   provider: provider,
-    //   signer: signer,
-    // });
-
-    // if (approvalTx === undefined) {
-    // 	setAnimationState('initial')
-    // 	setAnimationType('')
-    // 	setShowWaitingCard(false)
-    // }
-    // console.log("Fee approval tx hash -", tx);
-    // let result = tx ? await provider.waitForTransaction(tx.hash) : false;
-    // if (result?.status == 1) {
-    //   approvalTx = true;
-    //   setFeeTokenAllowance(
-    //     feeInfiniteApproval
-    //       ? formatDecimals(ethers.constants.MaxUint256, feeAsset.decimals)
-    //       : formatDecimals(bridgeFee.toString(), feeAsset.decimals)
-    //   );
-    //   setShouldFeeApprove(false);
-    // } else {
-    //   approvalTx = false;
-    // }
-
-    // if (approvalTx) {
-    //   if (
-    //     feeAsset.address.toLowerCase() ===
-    //     currentSourceAsset.address.toLowerCase() ||
-    //     !shouldSourceApprove
-    //   ) {
-    //     setShowApprovalWindow(false);
-    //     setShowConfirmOrderWindow(true);
-    //   }
-    //   latestActivity.push({
-    //     name: `Approve ${currentSourceAsset.symbol}`,
-    //     status: "Complete",
-    //     icon: "Approve",
-    //     date: dateString,
-    //     txUrl: explorerLinks[currentSourceChain.networkId] + tx?.hash,
-    //   });
-    // } else {
-    //   // setAnimationState('initial')
-    //   // setAnimationType('')
-    //   // setShowWaitingCard(false)
-    // }
-    // setFeeApprovalLoading(false);
+  }
   }, [
     currentSourceAsset,
     bridgeFee,
@@ -2903,34 +2526,6 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     isWalletConnected,
     balanceFetch,
   ]);
-
-  // const handleBuyRoute = useCallback(() => {
-  // 	setCurrentDestinationChain(currentSourceChain)
-  // 	setCurrentSourceAsset(assetList[currentSourceChain.networkId].filter(asset => asset.symbol.toLowerCase() === 'usdc' || asset.symbol.toLowerCase() === 'usdc.e')[0])
-  // 	setCurrentDestinationAsset(assetList[currentSourceChain.networkId].filter(asset => asset.symbol.toLowerCase() === 'route')[0])
-  // }, [])
-
-  // useEffect(
-  // 	() => {
-  // 		if (currentSourceAsset === '' || currentAccountAddress === '' || !isWalletConnected) return
-  // 		const fetchBalances = async () => {
-  // 			try {
-  // 				const ethcallProvider = new Provider(sourceProvider, Number(currentSourceChain.networkId))
-  // 				const balances = await ethcallProvider.all([
-  // 					getTokenBalance(currentSourceAsset, ethcallProvider),
-  // 					getTokenBalance(feeAsset, ethcallProvider)
-  // 				])
-  // 				console.log("Source Fee Balances - ", balances)
-  // 				setCurrentSourceBalance(balances[0] ? formatDecimals(balances[0], currentSourceAsset.decimals) : "0")
-  // 				setFeeAssetBalance(balances[1] ? formatDecimals(balances[1], feeAsset.decimals) : "0")
-  // 			} catch (e) {
-  // 				console.log("Source Fee Balances error - ", e)
-  // 			}
-  // 		}
-  // 		fetchBalances()
-  // 	},
-  // 	[currentSourceAsset, currentAccountAddress, balanceTrigger, feeAsset, isWalletConnected]
-  // );
 
   useEffect(() => {
     //const provider = new ethers.providers.JsonRpcProvider(currentSourceChain.endpoint);
@@ -3063,9 +2658,11 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     if (currentSourceChain.networkId === currentDestinationChain.networkId)
       return;
     setBridgeFee("-");
-    const filterFeeTokens = () => {
+    const filterFeeTokens = async () => {
       if (routerObject) {
-        routerObject.getBridgeFee(currentDestinationChain.networkId).then((res: any) => {
+        let res;
+        try{
+          res = await routerObject.getBridgeFee(currentDestinationChain.networkId)
           const feeTokens = res.map((i: any) => i.address)
           const nativeAsset = assetList[currentSourceChain.networkId].filter(
             (asset) => asset.native
@@ -3079,7 +2676,9 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
           console.log("feeTokens", feeTokens);
           console.log("native:", nativeAsset);
           console.log("filter fee tokens", filteredFeeTokens);
-        })
+        }catch(e){
+          console.log("error in filter fee tokens", e)
+        }
       }
     };
     filterFeeTokens();
@@ -3087,24 +2686,32 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
 
   useEffect(() => {
     if (!isWalletConnected) return;
-    const fetchApproval = () => {
+    const fetchApproval = async () => {
       if (routerObject) {
-        routerObject.getSourceTokenAllowance(currentSourceAsset.address, currentDestinationChain.networkId, currentAccountAddress).then((allowances: any) => {
+        let sourceAllowances;
+        try{
+          sourceAllowances = await routerObject.getSourceTokenAllowance(currentSourceAsset.address, currentDestinationChain.networkId, currentAccountAddress)
           // setGasObjectSdk(res)
-          console.log("Allowance::", allowances)
+          console.log("Allowance::", sourceAllowances)
           setSourceTokenAllowance(
-            allowances
-              ? formatDecimals(allowances, currentSourceAsset.decimals)
+            sourceAllowances
+              ? formatDecimals(sourceAllowances, currentSourceAsset.decimals)
               : "0"
           );
-        })
-        routerObject.getFeeTokenAllowance(feeAsset.address, currentDestinationChain.networkId, currentAccountAddress).then((allowances: any) => {
+        }catch(e){
+          console.log("error in getting source token approval", e)
+        }
+        let feeAllowances;
+        try{
+          feeAllowances = await routerObject.getFeeTokenAllowance(feeAsset.address, currentDestinationChain.networkId, currentAccountAddress)
           // setGasObjectSdk(res)
           setFeeTokenAllowance(
-            allowances ? formatDecimals(allowances, feeAsset.decimals) : "0"
+            feeAllowances ? formatDecimals(feeAllowances, feeAsset.decimals) : "0"
           );
-          console.log("Approval Amount Source,Fee Asset => ", allowances);
-        })
+          console.log("Approval Amount Source,Fee Asset => ", feeAllowances);
+        }catch(e){
+          console.log("error in getting fee token approval", e)
+        }
       }
     };
     fetchApproval();
@@ -3209,46 +2816,11 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     setFeeAsset(newFeeToken);
   }, [feeTokenList]);
 
-  // useEffect(() => {
-  // 	let interval: any
-  // 	if (pathFetching) {
-  // 		let word = `Calculating`
-  // 		let dots = ''
-  // 		setDestinationInput(word + dots)
-  // 		interval =
-  // 			setInterval(() => {
-  // 				dots += '.'
-  // 				if (dots.length === 4) dots = ''
-  // 				setDestinationInput(word + dots)
-  // 			}, 500)
-  // 	}
-  // 	return () => {
-  // 		clearInterval(interval)
-  // 	}
-
-  // }, [pathFetching])
-
   useEffect(() => {
     if (currentSourceChain.networkId === currentDestinationChain.networkId) {
       setTabValue(0);
     }
   }, [currentSourceChain, currentDestinationChain]);
-
-  // useEffect(() => {
-  //   if (
-  //     currentNetwork === "" ||
-  //     (currentNetwork && currentNetwork.name === "Loading...")
-  //   )
-  //     return;
-  //   // const query = new URLSearchParams(location.search);
-  //   // const fromChain = query.get("fromChain");
-  //   // const srcChain: NetworkType | null = fromChain
-  //   //   ? chainLookUp[fromChain]
-  //   //     ? chainLookUp[fromChain]
-  //   //     : null
-  //   //   : null;
-  //   // if (!srcChain) selectCurrentSourceChainHandler(currentNetwork);
-  // }, [currentNetwork]);
 
   useEffect(() => {
     if (isInitialRender) return;
@@ -3323,9 +2895,7 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
           : null
         : null;
 
-      let anyToken = localStorage.getItem("anyToken")
-        ? JSON.parse(localStorage.getItem("anyToken") || "{}")
-        : null;
+      let anyToken = null;
       let anySourceTokenList =
         anyToken && srcChain && anyToken[currentAccountAddress]
           ? anyToken[currentAccountAddress][srcChain.networkId]
@@ -3431,9 +3001,9 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
     if (bridgeFee === "-") {
       setShouldFeeApprove(false);
     } else if (
-      feeAsset.address !== currentSourceAsset.address &&
+      feeAsset?.address !== currentSourceAsset.address &&
       parseFloat(feeTokenAllowance) <
-      parseFloat(formatDecimals(bridgeFee.toString(), feeAsset.decimals))
+      parseFloat(formatDecimals(bridgeFee?.toString(), feeAsset.decimals))
     ) {
       setShouldFeeApprove(true);
     } else {
@@ -3605,15 +3175,6 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
         <SwapWrapper>
           <Header>
             <SelectedTab>Swap</SelectedTab>
-            {/* {
-                            upToMedium &&
-                            (<StyledFlash active={alertOpen}>
-                                <Flash message={alertMessage} active={alertOpen} />
-                            </StyledFlash>)
-                        } */}
-            {/* <BuyRouteSpan onClick={handleBuyRoute}>
-                                Buy Route
-                            </BuyRouteSpan> */}
           </Header>
           <MenuWrapper
             open={showSourceChainMenu}
@@ -4063,38 +3624,6 @@ const Swap = ({ currentNetwork, setCurrentNetwork, walletId, setWalletId, curren
                     ? " = $" + feePriceFeed[feeAsset.symbol]?.feeUsd
                     : " = $-"
                   }`}
-                {/* <HoverIcon1 src={informationIcon} />
-                              <EstimatedFeeBreakDownWrapper>
-                                  <HoverCard active={true}>
-                                      <EstimatedFeeBreakDown>
-                                          <HoverField>
-                                              <span>
-                                                  Network Fee:
-                                              </span>
-                                              <span>
-                                                  ${estimatedFee[2]}
-                                              </span>
-                                          </HoverField>
-                                          <HoverField>
-                                              <span>
-                                                  
-                                              </span>
-                                              <span>
-                                                  ${estimatedFee[1]}
-                                              </span>
-                                          </HoverField>
-                                          <StyledDivider></StyledDivider>
-                                          <HoverField>
-                                              <span>
-                                                  Total Fee:
-                                              </span>
-                                              <span>
-                                                  ${estimatedFee[0]}
-                                              </span>
-                                          </HoverField>
-                                      </EstimatedFeeBreakDown>
-                                  </HoverCard>
-                              </EstimatedFeeBreakDownWrapper> */}
               </SwapData>
               {currentSourceChain.networkId ===
                 currentDestinationChain.networkId ? (

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components";
-import { chainLogos } from "../../config/asset";
+import { assetList, AssetType, chainLogos } from "../../config/asset";
 //import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import MenuWrapper from "../Menu/MenuWrapper";
 import { chains, NetworkType } from "../../config/network";
@@ -15,6 +15,14 @@ interface CustomProps{
   currentNetwork: NetworkType | '';
   textColor: string;
   backgroundColor: string;
+  currentSourceAsset: AssetType;
+  setCurrentSourceAsset: (e: AssetType) => void;
+  currentDestinationAsset: AssetType;
+  setCurrentDestinationAsset: (e: AssetType) => void;
+  currentSourceChain: NetworkType
+  setCurrentSourceChain: (e: NetworkType) => void;
+  currentDestinationChain: NetworkType;
+  setCurrentDestinationChain: (e: NetworkType) => void;
 }
 
 const Wrapper = styled.div`
@@ -184,9 +192,40 @@ const NetworkArrayWrapper = styled.div<{ backgroundColor: string }>`
   }
 `;
 
-const Network: React.FunctionComponent<CustomProps> = ({isWalletConnected, currentNetwork, backgroundColor, textColor}: CustomProps) => {
+const Network: React.FunctionComponent<CustomProps> = ({isWalletConnected, currentNetwork, backgroundColor, textColor, currentSourceAsset, setCurrentSourceAsset, currentDestinationAsset, setCurrentDestinationAsset, currentSourceChain, setCurrentSourceChain, currentDestinationChain, setCurrentDestinationChain}: CustomProps) => {
   const upToSmall = useMediaQuery(`(max-width: ${MEDIA_WIDTHS.upToSmall}px)`);
   const [openNetworkMenu, setOpenNetworkMenu] = useState(false);
+  const handleNetworkChange = useCallback(async (newSourceChain: NetworkType) => {
+    await switchNetworkInMetamask(newSourceChain.id)
+    console.log("Network switched in Tab")
+    if (currentDestinationChain.networkId === newSourceChain.networkId) {
+      if (currentDestinationAsset.symbol === currentSourceAsset.symbol) {
+        if (
+          assetList[currentDestinationChain.networkId][0].symbol ===
+          currentSourceAsset.symbol
+        ) {
+          setCurrentDestinationAsset(
+            assetList[currentDestinationChain.networkId][1]
+          );
+        } else {
+          setCurrentDestinationAsset(
+            assetList[currentDestinationChain.networkId][0]
+          );
+        }
+      }
+    }
+
+    //Replacing the old asset with same asset on new chain
+    if (currentSourceAsset) {
+      let newAsset = assetList[newSourceChain.networkId].find(
+        (item) => item.symbol === currentSourceAsset.symbol
+      );
+      setCurrentSourceAsset(
+        newAsset ?? assetList[newSourceChain.networkId][0]
+      );
+    }
+    setCurrentSourceChain(newSourceChain);
+  }, [])
   return (
     <Wrapper>
       <MenuWrapper
@@ -202,7 +241,7 @@ const Network: React.FunctionComponent<CustomProps> = ({isWalletConnected, curre
             <StyledCloseIcon onClick={() => setOpenNetworkMenu(false)} />
           </NetworkTitle>
           <NetworkArrayWrapper backgroundColor={backgroundColor}>
-            {chains.map((chain, index) => <NetworkBody key={index} selected={currentNetwork !== '' && currentNetwork.networkId === chain.networkId} onClick={() => switchNetworkInMetamask(chain.id)} backgroundColor={backgroundColor}>
+            {chains.map((chain, index) => <NetworkBody key={index} selected={currentNetwork !== '' && currentNetwork.networkId === chain.networkId} onClick={() => handleNetworkChange(chain)} backgroundColor={backgroundColor}>
               <NetworkName>
                 <OnlineSign show={currentNetwork !== '' && currentNetwork.networkId === chain.networkId}></OnlineSign>
                 {chain.name?.split(' ')[0]}

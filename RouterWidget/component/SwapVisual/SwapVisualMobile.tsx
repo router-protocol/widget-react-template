@@ -45,7 +45,7 @@ const Content = styled.div`
     justify-items : center;
     width: 100%;
     z-index: 1;
-    margin-left: 20px;
+    margin: 0px 20px;
 `
 
 const AssetWrapper = styled.div`
@@ -53,7 +53,8 @@ const AssetWrapper = styled.div`
     align-items: center;
     justify-content: center;
     background: #00000040; 
-    width: 110px;
+    max-width: 110px;
+    width: 100%;
     height: 45px;
     padding: 0 15px;
     border-radius: 10px;
